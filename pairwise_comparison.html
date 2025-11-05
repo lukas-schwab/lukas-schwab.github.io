@@ -38,13 +38,13 @@
   <main class="app" role="main">
     <header>
       <div>
-        <h1>Two Image Vote</h1>
+        <h1>Which concepts are more descriptive?</h1>
         <p class="lead">Click the image you think is better. Votes are saved locally in your browser.</p>
       </div>
       <div class="controls">
-        <label class="small" title="Upload two files"><input id="fileA" type="file" accept="image/*" style="display:none"/><input id="fileB" type="file" accept="image/*" style="display:none"/></label>
+        <!-- <label class="small" title="Upload two files"><input id="fileA" type="file" accept="image/*" style="display:none"/><input id="fileB" type="file" accept="image/*" style="display:none"/></label> -->
         <!-- <button id="uploadBtn" class="small">Upload images</button> -->
-        <button id="swapBtn" class="small">Swap</button>
+        <!-- <button id="swapBtn" class="small">Swap</button> -->
         <!-- <button id="resetBtn" class="small">Reset votes</button> -->
       </div>
     </header>
@@ -106,8 +106,6 @@
       swapBtn: document.getElementById('swapBtn'),
       resetBtn: document.getElementById('resetBtn'),
       uploadBtn: document.getElementById('uploadBtn'),
-      fileA: document.getElementById('fileA'),
-      fileB: document.getElementById('fileB')
     };
 
     // =============================================================================
@@ -279,16 +277,6 @@
       }, 200);
     }
 
-    function swapImages() {
-      const tempSrc = elements.imgA.src;
-      elements.imgA.src = elements.imgB.src;
-      elements.imgB.src = tempSrc;
-      
-      updateCurrentPair();
-      updateDisplayedCounts();
-      updateStatus('Swapped images.');
-    }
-
     // =============================================================================
     // EVENT LISTENERS
     // =============================================================================
@@ -304,41 +292,12 @@
         if (e.key === 'ArrowRight' || e.key === '2') vote('B');
       });
 
-      // URL loading
-      elements.loadUrls.addEventListener('click', loadImages);
-
-      // Image swapping
-      elements.swapBtn.addEventListener('click', swapImages);
-
       // Reset votes
       elements.resetBtn.addEventListener('click', () => {
         if (!confirm('Clear all locally stored vote counts? This affects only this browser.')) return;
         localStorage.removeItem('two-image-votes');
         updateDisplayedCounts();
         updateStatus('Local votes reset.');
-      });
-
-      // File upload
-      elements.uploadBtn.addEventListener('click', () => {
-        elements.fileA.click();
-      });
-
-      elements.fileA.addEventListener('change', async (ev) => {
-        const f = ev.target.files[0];
-        if (!f) return;
-        elements.imgA.src = URL.createObjectURL(f);
-        elements.fileB.click();
-      });
-
-      elements.fileB.addEventListener('change', (ev) => {
-        const f = ev.target.files[0];
-        if (!f) return;
-        elements.imgB.src = URL.createObjectURL(f);
-        setTimeout(() => {
-          updateCurrentPair();
-          updateDisplayedCounts();
-          updateStatus('Loaded uploaded images.');
-        }, 200);
       });
 
       // Accessibility
