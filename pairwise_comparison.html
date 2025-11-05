@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Two Image Vote — Single File</title>
+  <title>Which Concept is better?</title>
   <style>
     :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--muted:#94a3b8}
     html,body{height:100%}
@@ -52,13 +52,13 @@
     <section class="images" id="images">
       <div class="card" id="cardA" tabindex="0" data-side="A">
         <!-- <div class="overlay-count" id="countA">0 votes</div> -->
-        <div class="imgwrap"><img id="imgA" alt="Image A" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'><rect width='100%' height='100%' fill='%2308172a'/><text x='50%' y='50%' fill='%23a5b4c9' font-size='36' font-family='Arial' text-anchor='middle' dominant-baseline='middle'>Sample Image A</text></svg>"></div>
+        <div class="imgwrap"><img id="imgA" alt="Image A" src="https://raw.githubusercontent.com/lukas-schwab/lukas-schwab.github.io/refs/heads/main/concept1.png"></div>
         <div class="meta"><div class="hint">Press ← or 1 to pick left</div><div class="count" id="metaA">Left</div></div>
       </div>
 
       <div class="card" id="cardB" tabindex="0" data-side="B">
         <!-- <div class="overlay-count" id="countB">0 votes</div> -->
-        <div class="imgwrap"><img id="imgB" alt="Image B" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'><rect width='100%' height='100%' fill='%2308172a'/><text x='50%' y='50%' fill='%23a5b4c9' font-size='36' font-family='Arial' text-anchor='middle' dominant-baseline='middle'>Sample Image B</text></svg>"></div>
+        <div class="imgwrap"><img id="imgB" alt="Image B" src="https://raw.githubusercontent.com/lukas-schwab/lukas-schwab.github.io/refs/heads/main/concept2.png"></div>
         <div class="meta"><div class="hint">Press → or 2 to pick right</div><div class="count" id="metaB">Right</div></div>
       </div>
     </section>
@@ -69,7 +69,7 @@
       <button id="loadUrls" class="primary small">Load URLs</button>
     </div> -->
 
-    <!-- <div class="status" id="status">Votes stored locally (localStorage). Refresh won't remove counts.</div> -->
+    <div class="status" id="status"></div>
 
     <footer>
       <div>Tip: click an image or press 1 / 2 / ← / →. Images are identified by URL or file name for counting.</div>
