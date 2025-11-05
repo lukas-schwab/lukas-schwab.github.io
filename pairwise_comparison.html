@@ -111,18 +111,24 @@
 
     function updateCounts(){ const store = storageGet(); countAel.textContent = (store[idFor(imgA.src)]||0) + ' votes'; countBel.textContent = (store[idFor(imgB.src)]||0) + ' votes' }
 
-    function vote(side){ // side 'A' or 'B'
-      const src = side === 'A' ? imgA.src : imgB.src
-      const key = idFor(src)
-      const store = storageGet()
-      store[key] = (store[key]||0) + 1
-      storageSet(store)
-      // visual feedback
-      if(side==='A'){ cardA.classList.add('selected'); setTimeout(()=>cardA.classList.remove('selected'),700) }
-      else { cardB.classList.add('selected'); setTimeout(()=>cardB.classList.remove('selected'),700) }
-      updateCounts()
-      status.textContent = `Recorded vote for ${side}. Total for that image: ${store[key]}.`
+     async function vote(side) {
+      const payload = {
+        imageA: currentPair[0],
+        imageB: currentPair[1],
+        choice: side,
+        session: localStorage.getItem("session") || (()=>{
+          const s = crypto.randomUUID();
+          localStorage.setItem("session", s);
+          return s;
+        })()
+      };
+      await fetch("https://script.google.com/macros/s/AKfycbxtvIA65EpCOdgtU129Ep4ghME2BLGVQblxAMfRz8KSl4FUj2hoITU7H-adHY1PfHItKg/exec", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {"Content-Type": "application/json"}
+      });
     }
+
 
     // Click handlers
     cardA.addEventListener('click', ()=>vote('A'))
