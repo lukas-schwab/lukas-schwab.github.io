@@ -78,114 +78,300 @@
   </main>
 
   <script>
-    // Minimal single-file voting frontend
-    const imgA = document.getElementById('imgA');
-    const imgB = document.getElementById('imgB');
-    const cardA = document.getElementById('cardA');
-    const cardB = document.getElementById('cardB');
-    const countAel = document.getElementById('countA');
-    const countBel = document.getElementById('countB');
-    const status = document.getElementById('status');
-    const urlA = document.getElementById('urlA');
-    const urlB = document.getElementById('urlB');
-    const loadUrls = document.getElementById('loadUrls');
-    const swapBtn = document.getElementById('swapBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const fileA = document.getElementById('fileA');
-    const fileB = document.getElementById('fileB');
+    // =============================================================================
+    // STATE MANAGEMENT
+    // =============================================================================
+    
+    const state = {
+      currentPair: [null, null], // [imageA_url, imageB_url]
+      session: null,
+      isVoting: false
+    };
 
-    // Votes stored in localStorage under 'two-image-votes' as {key:count}
-    function storageGet(){ try{return JSON.parse(localStorage.getItem('two-image-votes')||'{}')}catch(e){return{}} }
-    function storageSet(obj){ localStorage.setItem('two-image-votes', JSON.stringify(obj)) }
+    // =============================================================================
+    // DOM ELEMENTS
+    // =============================================================================
+    
+    const elements = {
+      imgA: document.getElementById('imgA'),
+      imgB: document.getElementById('imgB'),
+      cardA: document.getElementById('cardA'),
+      cardB: document.getElementById('cardB'),
+      countAel: document.getElementById('countA'),
+      countBel: document.getElementById('countB'),
+      status: document.getElementById('status'),
+      urlA: document.getElementById('urlA'),
+      urlB: document.getElementById('urlB'),
+      loadUrls: document.getElementById('loadUrls'),
+      swapBtn: document.getElementById('swapBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      uploadBtn: document.getElementById('uploadBtn'),
+      fileA: document.getElementById('fileA'),
+      fileB: document.getElementById('fileB')
+    };
 
-    function idFor(src){ // use file name or url path as id, strip query
-      if(!src) return 'unknown'
-      try{
-        // if data URL, return a short hash
-        if(src.startsWith('data:')) return src.slice(0,80)
-        const u = new URL(src, location.href)
-        return u.origin + u.pathname
-      }catch(e){ return src }
-    }
+    // =============================================================================
+    // BACKEND INTEGRATION
+    // =============================================================================
+    
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxtvIA65EpCOdgtU129Ep4ghME2BLGVQblxAMfRz8KSl4FUj2hoITU7H-adHY1PfHItKg/exec";
 
-    function updateCounts(){ const store = storageGet(); countAel.textContent = (store[idFor(imgA.src)]||0) + ' votes'; countBel.textContent = (store[idFor(imgB.src)]||0) + ' votes' }
-
-     async function vote(side) {
-      const payload = {
-        imageA: currentPair[0],
-        imageB: currentPair[1],
-        choice: side,
-        session: localStorage.getItem("session") || (()=>{
+    function getOrCreateSession() {
+      if (!state.session) {
+        state.session = localStorage.getItem("session") || (() => {
           const s = crypto.randomUUID();
           localStorage.setItem("session", s);
           return s;
-        })()
-      };
-      await fetch("https://script.google.com/macros/s/AKfycbxtvIA65EpCOdgtU129Ep4ghME2BLGVQblxAMfRz8KSl4FUj2hoITU7H-adHY1PfHItKg/exec", {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: {"Content-Type": "application/json"}
+        })();
+      }
+      return state.session;
+    }
+
+    async function submitVote(side) {
+      if (state.isVoting) return; // Prevent double voting
+      
+      state.isVoting = true;
+      updateStatus('Submitting vote...');
+      
+      try {
+        const payload = {
+          imageA: state.currentPair[0],
+          imageB: state.currentPair[1],
+          choice: side,
+          session: getOrCreateSession()
+        };
+
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: {"Content-Type": "application/json"}
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        updateStatus(`Voted for ${side === 'A' ? 'left' : 'right'} image. Vote recorded!`);
+        
+        // Update local counts after successful vote
+        updateLocalVoteCount(side);
+        updateDisplayedCounts();
+        
+      } catch (error) {
+        console.error('Vote submission failed:', error);
+        updateStatus('Vote failed to submit. Please try again.');
+      } finally {
+        state.isVoting = false;
+      }
+    }
+
+    // =============================================================================
+    // LOCAL STORAGE MANAGEMENT
+    // =============================================================================
+    
+    function storageGet() { 
+      try { 
+        return JSON.parse(localStorage.getItem('two-image-votes') || '{}'); 
+      } catch(e) { 
+        return {}; 
+      } 
+    }
+    
+    function storageSet(obj) { 
+      localStorage.setItem('two-image-votes', JSON.stringify(obj)); 
+    }
+
+    function idFor(src) {
+      if (!src) return 'unknown';
+      try {
+        if (src.startsWith('data:')) return src.slice(0, 80);
+        const u = new URL(src, location.href);
+        return u.origin + u.pathname;
+      } catch(e) { 
+        return src; 
+      }
+    }
+
+    function updateLocalVoteCount(side) {
+      const store = storageGet();
+      const imgSrc = side === 'A' ? elements.imgA.src : elements.imgB.src;
+      const id = idFor(imgSrc);
+      store[id] = (store[id] || 0) + 1;
+      storageSet(store);
+    }
+
+    function updateDisplayedCounts() {
+      const store = storageGet();
+      const countA = store[idFor(elements.imgA.src)] || 0;
+      const countB = store[idFor(elements.imgB.src)] || 0;
+      elements.countAel.textContent = countA + ' votes';
+      elements.countBel.textContent = countB + ' votes';
+    }
+
+    // =============================================================================
+    // UI HELPERS
+    // =============================================================================
+    
+    function updateStatus(message) {
+      elements.status.textContent = message;
+    }
+
+    function updateCurrentPair() {
+      state.currentPair[0] = elements.imgA.src;
+      state.currentPair[1] = elements.imgB.src;
+    }
+
+    function addSelectedEffect(side) {
+      // Remove previous selection
+      elements.cardA.classList.remove('selected');
+      elements.cardB.classList.remove('selected');
+      
+      // Add selection to voted card
+      if (side === 'A') {
+        elements.cardA.classList.add('selected');
+      } else {
+        elements.cardB.classList.add('selected');
+      }
+      
+      // Remove selection after animation
+      setTimeout(() => {
+        elements.cardA.classList.remove('selected');
+        elements.cardB.classList.remove('selected');
+      }, 1000);
+    }
+
+    // =============================================================================
+    // VOTING LOGIC
+    // =============================================================================
+    
+    async function vote(side) {
+      if (state.isVoting) return;
+      
+      updateCurrentPair();
+      
+      // Validate that we have both images
+      if (!state.currentPair[0] || !state.currentPair[1]) {
+        updateStatus('Please load both images before voting.');
+        return;
+      }
+
+      addSelectedEffect(side);
+      await submitVote(side);
+    }
+
+    // =============================================================================
+    // IMAGE LOADING
+    // =============================================================================
+    
+    function loadImages() {
+      if (elements.urlA.value) {
+        elements.imgA.src = elements.urlA.value;
+      }
+      if (elements.urlB.value) {
+        elements.imgB.src = elements.urlB.value;
+      }
+      
+      setTimeout(() => {
+        updateCurrentPair();
+        updateDisplayedCounts();
+        updateStatus('Loaded URLs. You can now vote.');
+      }, 200);
+    }
+
+    function swapImages() {
+      const tempSrc = elements.imgA.src;
+      elements.imgA.src = elements.imgB.src;
+      elements.imgB.src = tempSrc;
+      
+      updateCurrentPair();
+      updateDisplayedCounts();
+      updateStatus('Swapped images.');
+    }
+
+    // =============================================================================
+    // EVENT LISTENERS
+    // =============================================================================
+    
+    function setupEventListeners() {
+      // Vote handlers
+      elements.cardA.addEventListener('click', () => vote('A'));
+      elements.cardB.addEventListener('click', () => vote('B'));
+
+      // Keyboard support
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' || e.key === '1') vote('A');
+        if (e.key === 'ArrowRight' || e.key === '2') vote('B');
+      });
+
+      // URL loading
+      elements.loadUrls.addEventListener('click', loadImages);
+
+      // Image swapping
+      elements.swapBtn.addEventListener('click', swapImages);
+
+      // Reset votes
+      elements.resetBtn.addEventListener('click', () => {
+        if (!confirm('Clear all locally stored vote counts? This affects only this browser.')) return;
+        localStorage.removeItem('two-image-votes');
+        updateDisplayedCounts();
+        updateStatus('Local votes reset.');
+      });
+
+      // File upload
+      elements.uploadBtn.addEventListener('click', () => {
+        elements.fileA.click();
+      });
+
+      elements.fileA.addEventListener('change', async (ev) => {
+        const f = ev.target.files[0];
+        if (!f) return;
+        elements.imgA.src = URL.createObjectURL(f);
+        elements.fileB.click();
+      });
+
+      elements.fileB.addEventListener('change', (ev) => {
+        const f = ev.target.files[0];
+        if (!f) return;
+        elements.imgB.src = URL.createObjectURL(f);
+        setTimeout(() => {
+          updateCurrentPair();
+          updateDisplayedCounts();
+          updateStatus('Loaded uploaded images.');
+        }, 200);
+      });
+
+      // Accessibility
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') document.body.classList.add('show-focus');
       });
     }
 
+    // =============================================================================
+    // INITIALIZATION
+    // =============================================================================
+    
+    function init() {
+      setupEventListeners();
+      updateCurrentPair();
+      updateDisplayedCounts();
+      getOrCreateSession(); // Ensure session is created
+      updateStatus('Ready to vote. Load images using URLs or upload files.');
+    }
 
-    // Click handlers
-    cardA.addEventListener('click', ()=>vote('A'))
-    cardB.addEventListener('click', ()=>vote('B'))
+    // Start the application
+    init();
 
-    // Keyboard support
-    window.addEventListener('keydown', (e)=>{
-      if(e.key === 'ArrowLeft' || e.key === '1') vote('A')
-      if(e.key === 'ArrowRight' || e.key === '2') vote('B')
-    })
-
-    // Load URLs
-    loadUrls.addEventListener('click', ()=>{
-      if(urlA.value) imgA.src = urlA.value
-      if(urlB.value) imgB.src = urlB.value
-      // small delay to ensure src updated
-      setTimeout(()=>{ updateCounts(); status.textContent='Loaded URLs. You can now vote.' },200)
-    })
-
-    // Swap images
-    swapBtn.addEventListener('click', ()=>{
-      const s = imgA.src; imgA.src = imgB.src; imgB.src = s; updateCounts(); status.textContent='Swapped images.'
-    })
-
-    // Reset votes
-    resetBtn.addEventListener('click', ()=>{
-      if(!confirm('Clear all locally stored vote counts? This affects only this browser.')) return
-      localStorage.removeItem('two-image-votes'); updateCounts(); status.textContent='Votes reset.'
-    })
-
-    // Upload images (two file inputs created programmatically)
-    uploadBtn.addEventListener('click', ()=>{
-      fileA.click();
-      // after selecting first file, trigger second
-    })
-    fileA.addEventListener('change', async (ev)=>{
-      const f = ev.target.files[0]; if(!f) return
-      imgA.src = URL.createObjectURL(f)
-      // now open second
-      fileB.click()
-    })
-    fileB.addEventListener('change', (ev)=>{
-      const f = ev.target.files[0]; if(!f) return
-      imgB.src = URL.createObjectURL(f)
-      setTimeout(()=>{ updateCounts(); status.textContent='Loaded uploaded images.' },200)
-    })
-
-    // init
-    updateCounts();
-
-    // Accessibility: focus outlines via keyboard
-    document.addEventListener('keydown', (e)=>{
-      if(e.key==='Tab') document.body.classList.add('show-focus')
-    })
-
-    // Expose small helper for debugging
-    window.twoImageVote = { vote, updateCounts, storageGet }
+    // =============================================================================
+    // DEBUG HELPERS
+    // =============================================================================
+    
+    window.twoImageVote = { 
+      vote, 
+      updateDisplayedCounts, 
+      storageGet, 
+      state,
+      elements 
+    };
   </script>
 </body>
 </html>
