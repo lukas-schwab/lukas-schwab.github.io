@@ -262,20 +262,20 @@
     // IMAGE LOADING
     // =============================================================================
     
-    function loadImages() {
-      if (elements.urlA.value) {
-        elements.imgA.src = elements.urlA.value;
-      }
-      if (elements.urlB.value) {
-        elements.imgB.src = elements.urlB.value;
-      }
-      
-      setTimeout(() => {
-        updateCurrentPair();
-        updateDisplayedCounts();
-        updateStatus('Loaded URLs. You can now vote.');
-      }, 200);
-    }
+    // function loadImages() {
+    //  if (elements.urlA.value) {
+    //    elements.imgA.src = elements.urlA.value;
+    //  }
+    //  if (elements.urlB.value) {
+    //    elements.imgB.src = elements.urlB.value;
+    //  }
+    //  
+    //  setTimeout(() => {
+    //    updateCurrentPair();
+    //    updateDisplayedCounts();
+    //    updateStatus('Loaded URLs. You can now vote.');
+    //  }, 200);
+    // }
 
     // =============================================================================
     // EVENT LISTENERS
@@ -293,12 +293,12 @@
       });
 
       // Reset votes
-      elements.resetBtn.addEventListener('click', () => {
-        if (!confirm('Clear all locally stored vote counts? This affects only this browser.')) return;
-        localStorage.removeItem('two-image-votes');
-        updateDisplayedCounts();
-        updateStatus('Local votes reset.');
-      });
+      // elements.resetBtn.addEventListener('click', () => {
+      //  if (!confirm('Clear all locally stored vote counts? This affects only this browser.')) return;
+      //  localStorage.removeItem('two-image-votes');
+      //  updateDisplayedCounts();
+      //  updateStatus('Local votes reset.');
+      // });
 
       // Accessibility
       document.addEventListener('keydown', (e) => {
