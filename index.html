@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css">
+  <script src="pairwise.js"></script>
+  <title>Which Concept is better?</title>
+</head>
+
+<body>
+  <main class="app" role="main">
+    <header>
+      <div>
+        <h1>Which concepts are more descriptive?</h1>
+        <p class="lead">Click on the concepts you think are better.</p>
+      </div>
+      <div class="controls">
+        <!-- <label class="small" title="Upload two files"><input id="fileA" type="file" accept="image/*" style="display:none"/><input id="fileB" type="file" accept="image/*" style="display:none"/></label> -->
+        <!-- <button id="uploadBtn" class="small">Upload images</button> -->
+        <!-- <button id="swapBtn" class="small">Swap</button> -->
+        <!-- <button id="resetBtn" class="small">Reset votes</button> -->
+      </div>
+    </header>
+
+    <section class="images" id="images">
+      <div class="card" id="cardA" tabindex="0" data-side="A">
+        <!-- <div class="overlay-count" id="countA">0 votes</div> -->
+        <div class="imgwrap"><img id="imgA" alt="Image A" src=""> <!-- Start empty, will be loaded by JS -->
+        </div>
+        <div class="meta">
+          <div class="hint">Press ← or 1 to pick left</div>
+          <div class="count" id="metaA">Left</div>
+        </div>
+      </div>
+
+      <div class="card" id="cardB" tabindex="0" data-side="B">
+        <!-- <div class="overlay-count" id="countB">0 votes</div> -->
+        <div class="imgwrap"><img id="imgB" alt="Image B" src=""> <!-- Start empty, will be loaded by JS -->
+        </div>
+        <div class="meta">
+          <div class="hint">Press → or 2 to pick right</div>
+          <div class="count" id="metaB">Right</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- <div class="urlinputs">
+      <input id="urlA" type="text" placeholder="Image URL for left (or leave)" />
+      <input id="urlB" type="text" placeholder="Image URL for right (or leave)" />
+      <button id="loadUrls" class="primary small">Load URLs</button>
+    </div> -->
+
+    <div class="status" id="status"></div>
+
+    <footer>
+      <div>Tip: click an image or press 1 / 2 / ← / →. Images are identified by URL or file name for counting.</div>
+      <div>Made with ❤️</div>
+    </footer>
+  </main>
+</body>
+
+</html>
