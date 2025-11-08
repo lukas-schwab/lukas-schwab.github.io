@@ -305,6 +305,8 @@
     async function submitVote(side) {
       if (state.isVoting) return; // Prevent double voting
 
+      loadImages();
+
       state.isVoting = true;
       updateStatus('Submitting vote...');
 
@@ -337,7 +339,6 @@
         console.error('Vote submission failed:', error);
         updateStatus('Vote failed to submit. Please try again.');
       } finally {
-        await loadImages();
         state.isVoting = false;
       }
     }
