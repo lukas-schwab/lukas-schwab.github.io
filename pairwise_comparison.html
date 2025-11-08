@@ -476,6 +476,7 @@
         }
       }
 
+
       // 2. Queue has images, so display the next one
       const nextPair = state.imageUrlQueue.shift();
       state.currentPair = nextPair;
@@ -541,7 +542,10 @@
 
       // 4. Load and display the next pair
       // This is awaited, and will set state.isVoting = false when done
-      await displayNextPair();
+      // For UX reasons we also wait before setting the new image.
+      setTimeout(async () => {
+        await displayNextPair();
+      }, 750);
     }
 
     // =============================================================================
