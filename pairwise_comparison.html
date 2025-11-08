@@ -26,7 +26,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px
+      padding: 24px;
+      box-sizing: border-box;
     }
 
     .app {
@@ -92,14 +93,25 @@
       justify-content: center;
       overflow: hidden;
       border-radius: 8px;
-      background: linear-gradient(180deg, #081226, #071226)
+      background: linear-gradient(180deg, #081226, #071226);
+      /* Added transition for smoother image loading */
+      transition: opacity 0.3s ease;
+      opacity: 1;
+    }
+
+    /* Style for when images are loading */
+    .imgwrap img[src=""] {
+      opacity: 0;
     }
 
     .imgwrap img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
-      display: block
+      display: block;
+      /* Add fallback color and min-height */
+      background-color: #071226;
+      min-height: 100px;
     }
 
     .meta {
@@ -158,7 +170,9 @@
     .status {
       margin-top: 10px;
       color: var(--muted);
-      font-size: 13px
+      font-size: 13px;
+      min-height: 1.2em;
+      /* Prevent layout shift */
     }
 
     footer {
@@ -215,8 +229,7 @@
     <section class="images" id="images">
       <div class="card" id="cardA" tabindex="0" data-side="A">
         <!-- <div class="overlay-count" id="countA">0 votes</div> -->
-        <div class="imgwrap"><img id="imgA" alt="Image A"
-            src="https://raw.githubusercontent.com/lukas-schwab/lukas-schwab.github.io/refs/heads/main/concept1.png">
+        <div class="imgwrap"><img id="imgA" alt="Image A" src=""> <!-- Start empty, will be loaded by JS -->
         </div>
         <div class="meta">
           <div class="hint">Press ← or 1 to pick left</div>
@@ -226,8 +239,7 @@
 
       <div class="card" id="cardB" tabindex="0" data-side="B">
         <!-- <div class="overlay-count" id="countB">0 votes</div> -->
-        <div class="imgwrap"><img id="imgB" alt="Image B"
-            src="https://raw.githubusercontent.com/lukas-schwab/lukas-schwab.github.io/refs/heads/main/concept2.png">
+        <div class="imgwrap"><img id="imgB" alt="Image B" src=""> <!-- Start empty, will be loaded by JS -->
         </div>
         <div class="meta">
           <div class="hint">Press → or 2 to pick right</div>
@@ -237,10 +249,10 @@
     </section>
 
     <!-- <div class="urlinputs">
-      <input id="urlA" type="text" placeholder="Image URL for left (or leave)" />
-      <input id="urlB" type="text" placeholder="Image URL for right (or leave)" />
-      <button id="loadUrls" class="primary small">Load URLs</button>
-    </div> -->
+      <input id="urlA" type="text" placeholder="Image URL for left (or leave)" />
+      <input id="urlB" type="text" placeholder="Image URL for right (or leave)" />
+      <button id="loadUrls" class="primary small">Load URLs</button>
+    </div> -->
 
     <div class="status" id="status"></div>
 
@@ -257,8 +269,10 @@
 
     const state = {
       currentPair: [null, null], // [imageA_url, imageB_url]
+      imageUrlQueue: [], // Stores upcoming pairs [ [a1, b1], [a2, b2], ... ]
       session: null,
-      isVoting: true
+      isVoting: true,    // Start true to block voting until first images load
+      isFetching: false, // Prevent simultaneous fetches
     };
 
     // =============================================================================
@@ -273,12 +287,12 @@
       countAel: document.getElementById('countA'),
       countBel: document.getElementById('countB'),
       status: document.getElementById('status'),
-      urlA: document.getElementById('urlA'),
-      urlB: document.getElementById('urlB'),
-      loadUrls: document.getElementById('loadUrls'),
-      swapBtn: document.getElementById('swapBtn'),
-      resetBtn: document.getElementById('resetBtn'),
-      uploadBtn: document.getElementById('uploadBtn'),
+      // urlA: document.getElementById('urlA'),
+      // urlB: document.getElementById('urlB'),
+      // loadUrls: document.getElementById('loadUrls'),
+      // swapBtn: document.getElementById('swapBtn'),
+      // resetBtn: document.getElementById('resetBtn'),
+      // uploadBtn: document.getElementById('uploadBtn'),
     };
 
     // =============================================================================
@@ -286,9 +300,10 @@
     // =============================================================================
 
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbz7SH8va_1Zy0TR7cJXL9-_FcunWEUtJOOwHdPRlNRx_yJsi4TieE6ujirK_o_TnBWCMQ/exec";
+    const IMAGE_QUEUE_LOW_WATER_MARK = 2; // Fetch more images when queue has this many pairs left
 
     document.addEventListener('DOMContentLoaded', () => {
-      loadImages();
+      init();
     });
 
     function getOrCreateSession() {
@@ -302,18 +317,16 @@
       return state.session;
     }
 
-    async function submitVote(side) {
-      if (state.isVoting) return; // Prevent double voting
-
-      loadImages();
-
-      state.isVoting = true;
-      updateStatus('Submitting vote...');
+    /**
+     * Submits the vote in the background without blocking the UI.
+     */
+    async function submitVoteInBackground(side, pair, imgSrcToCount) {
+      console.log('Submitting vote...');
 
       try {
         const payload = {
-          imageA: state.currentPair[0],
-          imageB: state.currentPair[1],
+          imageA: pair[0],
+          imageB: pair[1],
           choice: side,
           session: getOrCreateSession()
         };
@@ -329,17 +342,59 @@
           throw new Error(`HTTP ${response.status}`);
         }
 
-        updateStatus(`Voted for ${side === 'A' ? 'left' : 'right'} image. Vote recorded!`);
-
+        console.log('Vote recorded!');
         // Update local counts after successful vote
-        updateLocalVoteCount(side);
-        updateDisplayedCounts();
+        updateLocalVoteCount(imgSrcToCount);
+        // updateDisplayedCounts(); // Counts are updated when new pair is shown
 
       } catch (error) {
         console.error('Vote submission failed:', error);
-        updateStatus('Vote failed to submit. Please try again.');
+        updateStatus('Last vote failed to submit. It may be retried.');
+      }
+    }
+
+    /**
+     * Fetches a batch of image URLs (10) from the backend and adds them to the queue.
+     */
+    async function fetchImageBatch() {
+      if (state.isFetching) return;
+      state.isFetching = true;
+      console.log('Fetching new image batch...');
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "GET",
+          mode: 'cors',
+          headers: { "Content-Type": "text/plain;charset=utf-8" }
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const responseText = await response.text();
+        const data = JSON.parse(responseText);
+
+        // Assuming data.received is an array of 10 URLs
+        const pairs = [];
+        if (data.received && data.received.length > 0) {
+          for (let i = 0; i < data.received.length; i += 2) {
+            if (data.received[i] && data.received[i + 1]) {
+              pairs.push([data.received[i], data.received[i + 1]]);
+            }
+          }
+        }
+
+        if (pairs.length > 0) {
+          state.imageUrlQueue.push(...pairs);
+          console.log(`Added ${pairs.length} new pairs to queue.`);
+        } else {
+          throw new Error('No valid image pairs received from backend.');
+        }
+
+      } catch (error) {
+        console.error('Loading URLs failed:', error);
+        updateStatus('Loading new images failed, try reloading the site.');
       } finally {
-        state.isVoting = false;
+        state.isFetching = false;
       }
     }
 
@@ -370,15 +425,24 @@
       }
     }
 
-    function updateLocalVoteCount(side) {
+    /**
+     * Updates the local vote count for a specific image source.
+     */
+    function updateLocalVoteCount(imgSrc) {
       const store = storageGet();
-      const imgSrc = side === 'A' ? elements.imgA.src : elements.imgB.src;
       const id = idFor(imgSrc);
       store[id] = (store[id] || 0) + 1;
       storageSet(store);
     }
 
+    /**
+     * Updates the displayed vote counts for the *currently visible* images.
+     */
     function updateDisplayedCounts() {
+      // This feature is currently commented out in the HTML.
+      // If re-enabled, this function will work as intended.
+      if (!elements.countAel || !elements.countBel) return;
+
       const store = storageGet();
       const countA = store[idFor(elements.imgA.src)] || 0;
       const countB = store[idFor(elements.imgB.src)] || 0;
@@ -394,10 +458,48 @@
       elements.status.textContent = message;
     }
 
-    function updateCurrentPair() {
-      state.currentPair[0] = elements.imgA.src;
-      state.currentPair[1] = elements.imgB.src;
+    /**
+     * Gets the next pair from the queue and displays them.
+     * Fetches more images if the queue is empty or low.
+     */
+    async function displayNextPair() {
+      // 1. Check if queue is empty and fetch if needed
+      if (state.imageUrlQueue.length === 0) {
+        updateStatus('Fetching new images...');
+        await fetchImageBatch(); // Wait for it to finish
+
+        // After await, check again in case fetch failed
+        if (state.imageUrlQueue.length === 0) {
+          updateStatus('Failed to load new images. Please refresh.');
+          state.isVoting = true; // Block voting
+          return; // Can't proceed
+        }
+      }
+
+      // 2. Queue has images, so display the next one
+      const nextPair = state.imageUrlQueue.shift();
+      state.currentPair = nextPair;
+
+      // Set src to empty string first to trigger loading state (if CSS is set up)
+      elements.imgA.src = "";
+      elements.imgB.src = "";
+
+      // Set the actual source
+      elements.imgA.src = state.currentPair[0];
+      elements.imgB.src = state.currentPair[1];
+
+      updateDisplayedCounts(); // Update counts for the *new* pair
+      updateStatus('Please vote.');
+      state.isVoting = false; // Allow voting for this new pair
+
+      // 3. Check buffer and pre-fetch if necessary
+      if (state.imageUrlQueue.length <= IMAGE_QUEUE_LOW_WATER_MARK && !state.isFetching) {
+        // Don't await, just start it in the background
+        console.log('Queue is low, pre-fetching next batch...');
+        fetchImageBatch();
+      }
     }
+
 
     function addSelectedEffect(side) {
       // Remove previous selection
@@ -423,47 +525,23 @@
     // =============================================================================
 
     async function vote(side) {
-      if (state.isVoting) return;
+      if (state.isVoting) return; // Prevent double-clicks
+      state.isVoting = true; // Block *new* votes immediately
 
-      updateCurrentPair();
+      // 1. Get data for the vote before changing images
+      const pairToSubmit = [...state.currentPair];
+      const imgSrcToCount = pairToSubmit[side === 'A' ? 0 : 1];
 
-      // Validate that we have both images
-      if (!state.currentPair[0] || !state.currentPair[1]) {
-        updateStatus('Please load both images before voting.');
-        return;
-      }
-
+      // 2. Update UI immediately
       addSelectedEffect(side);
-      await submitVote(side);
-    }
 
-    // =============================================================================
-    // IMAGE LOADING
-    // =============================================================================
+      // 3. Start background submission
+      // We don't await this. It runs in parallel.
+      submitVoteInBackground(side, pairToSubmit, imgSrcToCount);
 
-    async function loadImages() {
-      try {
-        const response = await fetch(BACKEND_URL, {
-          method: "GET",
-          mode: 'cors',
-          headers: { "Content-Type": "text/plain;charset=utf-8" }
-        });
-
-        const responseText = await response.text(); // Get the raw text
-        const data = JSON.parse(responseText); // Parse it as JSON
-
-        elements.imgA.src = data.received[0];
-        elements.imgB.src = data.received[1];
-
-        updateCurrentPair();
-        updateDisplayedCounts();
-        updateStatus('Loaded URLs. You can now vote.');
-      } catch (error) {
-        console.error('Loading URLs failed:', error);
-        updateStatus('Loading URLs failed, try reloading the site.');
-      } finally {
-        state.isVoting = false;
-      }
+      // 4. Load and display the next pair
+      // This is awaited, and will set state.isVoting = false when done
+      await displayNextPair();
     }
 
     // =============================================================================
@@ -477,17 +555,21 @@
 
       // Keyboard support
       window.addEventListener('keydown', (e) => {
+        if (state.isVoting) return; // Ignore keypress if not ready
         if (e.key === 'ArrowLeft' || e.key === '1') vote('A');
         if (e.key === 'ArrowRight' || e.key === '2') vote('B');
       });
 
-      // Reset votes
-      // elements.resetBtn.addEventListener('click', () => {
-      //  if (!confirm('Clear all locally stored vote counts? This affects only this browser.')) return;
-      //  localStorage.removeItem('two-image-votes');
-      //  updateDisplayedCounts();
-      //  updateStatus('Local votes reset.');
-      // });
+      // Reset votes (if button is re-enabled)
+      // if (elements.resetBtn) {
+      //   elements.resetBtn.addEventListener('click', () => {
+      //     // Use a custom modal instead of confirm()
+      //     updateStatus('Resetting votes... (feature in dev)');
+      //     // localStorage.removeItem('two-image-votes');
+      //     // updateDisplayedCounts();
+      //     // updateStatus('Local votes reset.');
+      //   });
+      // }
 
       // Accessibility
       document.addEventListener('keydown', (e) => {
@@ -501,14 +583,12 @@
 
     function init() {
       setupEventListeners();
-      updateCurrentPair();
-      updateDisplayedCounts();
       getOrCreateSession(); // Ensure session is created
-      updateStatus('Ready to vote. Load images using URLs or upload files.');
-    }
+      updateStatus('Loading first images...');
 
-    // Start the application
-    init();
+      // Kick off the whole process
+      displayNextPair();
+    }
 
     // =============================================================================
     // DEBUG HELPERS
@@ -519,7 +599,9 @@
       updateDisplayedCounts,
       storageGet,
       state,
-      elements
+      elements,
+      fetchImageBatch,
+      displayNextPair
     };
   </script>
 </body>
