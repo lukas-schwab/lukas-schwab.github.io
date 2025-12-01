@@ -11,21 +11,22 @@
 <body>
   <main class="app" role="main">
     <header>
-      <div>
-        <h1>Which concepts are more descriptive?</h1>
-        <p class="lead">Click on the concepts you think are better.</p>
-      </div>
-      <div class="controls">
-        <!-- <label class="small" title="Upload two files"><input id="fileA" type="file" accept="image/*" style="display:none"/><input id="fileB" type="file" accept="image/*" style="display:none"/></label> -->
-        <!-- <button id="uploadBtn" class="small">Upload images</button> -->
-        <!-- <button id="swapBtn" class="small">Swap</button> -->
-        <!-- <button id="resetBtn" class="small">Reset votes</button> -->
+      <div class="header-content">
+        <div>
+          <h1>Which concept is more descriptive?</h1>
+          <p class="lead">Click the better image to vote.</p>
+        </div>
+        <div class="gamification-stats">
+          <div class="vote-counter">
+            <div class="progress-fill" id="progressBar"></div>
+            <span class="vote-text"><span id="voteCount">0</span> votes</span>
+          </div>
+        </div>
       </div>
     </header>
 
     <section class="images" id="images">
       <div class="card" id="cardA" tabindex="0" data-side="A">
-        <!-- <div class="overlay-count" id="countA">0 votes</div> -->
         <div class="imgwrap"><img id="imgA" alt="Image A" src=""> <!-- Start empty, will be loaded by JS -->
         </div>
         <div class="meta">
@@ -35,7 +36,6 @@
       </div>
 
       <div class="card" id="cardB" tabindex="0" data-side="B">
-        <!-- <div class="overlay-count" id="countB">0 votes</div> -->
         <div class="imgwrap"><img id="imgB" alt="Image B" src=""> <!-- Start empty, will be loaded by JS -->
         </div>
         <div class="meta">
@@ -45,18 +45,13 @@
       </div>
     </section>
 
-    <!-- <div class="urlinputs">
-      <input id="urlA" type="text" placeholder="Image URL for left (or leave)" />
-      <input id="urlB" type="text" placeholder="Image URL for right (or leave)" />
-      <button id="loadUrls" class="primary small">Load URLs</button>
-    </div> -->
-
     <div class="status" id="status"></div>
 
     <footer>
       <div>Tip: click an image or press 1 / 2 / ← / →. Images are identified by URL or file name for counting.</div>
       <div>Made with ❤️</div>
     </footer>
+    <div id="toast-container" class="toast-container"></div>
   </main>
   <script src="pairwise.js"></script>
 </body>

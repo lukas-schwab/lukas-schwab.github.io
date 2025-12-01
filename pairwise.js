@@ -6,8 +6,12 @@ const state = {
     currentPair: [null, null], // [imageA_url, imageB_url]
     imageUrlQueue: [], // Stores upcoming pairs [ [a1, b1], [a2, b2], ... ]
     session: null,
+    groupIdentifier: null,
     isVoting: true,    // Start true to block voting until first images load
     isFetching: false, // Prevent simultaneous fetches
+    sessionVoteCount: 0, // Track votes in this session
+    milestones: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100], // Gamification milestones
+    lastPairLoadedTime: 0 // Track when images were actually shown
 };
 
 // =============================================================================
@@ -22,12 +26,10 @@ const elements = {
     countAel: document.getElementById('countA'),
     countBel: document.getElementById('countB'),
     status: document.getElementById('status'),
-    // urlA: document.getElementById('urlA'),
-    // urlB: document.getElementById('urlB'),
-    // loadUrls: document.getElementById('loadUrls'),
-    // swapBtn: document.getElementById('swapBtn'),
-    // resetBtn: document.getElementById('resetBtn'),
-    // uploadBtn: document.getElementById('uploadBtn'),
+    voteCount: document.getElementById('voteCount'),
+    progressBar: document.getElementById('progressBar'),
+    toastContainer: document.getElementById('toast-container'),
+    imgWraps: document.querySelectorAll('.imgwrap'),
 };
 
 // =============================================================================
@@ -52,6 +54,24 @@ function getOrCreateSession() {
     return state.session;
 }
 
+function getGroupIdentifier() {
+    if (!state.groupIdentifier) {
+        state.groupIdentifier = localStorage.getItem("groupIdentifier") || (() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const group = urlParams.get('group');
+            localStorage.setItem("groupIdentifier", group);
+
+            return group;
+        })();
+    }
+
+    return state.groupIdentifier;
+}
+
+function resetURL() {
+    window.history.pushState({}, document.title, "/");
+}
+
 /**
  * Submits the vote in the background without blocking the UI.
  */
@@ -63,7 +83,8 @@ async function submitVoteInBackground(side, pair, imgSrcToCount) {
             imageA: pair[0],
             imageB: pair[1],
             choice: side,
-            session: getOrCreateSession()
+            session: getOrCreateSession(),
+            groupIdentifier: getGroupIdentifier()
         };
 
         const response = await fetch(BACKEND_URL, {
@@ -78,9 +99,7 @@ async function submitVoteInBackground(side, pair, imgSrcToCount) {
         }
 
         console.log('Vote recorded!');
-        // Update local counts after successful vote
         updateLocalVoteCount(imgSrcToCount);
-        // updateDisplayedCounts(); // Counts are updated when new pair is shown
 
     } catch (error) {
         console.error('Vote submission failed:', error);
@@ -108,7 +127,6 @@ async function fetchImageBatch() {
         const responseText = await response.text();
         const data = JSON.parse(responseText);
 
-        // Assuming data.received is an array of 10 URLs
         const pairs = [];
         if (data.received && data.received.length > 0) {
             for (let i = 0; i < data.received.length; i += 2) {
@@ -160,9 +178,6 @@ function idFor(src) {
     }
 }
 
-/**
- * Updates the local vote count for a specific image source.
- */
 function updateLocalVoteCount(imgSrc) {
     const store = storageGet();
     const id = idFor(imgSrc);
@@ -170,12 +185,7 @@ function updateLocalVoteCount(imgSrc) {
     storageSet(store);
 }
 
-/**
- * Updates the displayed vote counts for the *currently visible* images.
- */
 function updateDisplayedCounts() {
-    // This feature is currently commented out in the HTML.
-    // If re-enabled, this function will work as intended.
     if (!elements.countAel || !elements.countBel) return;
 
     const store = storageGet();
@@ -201,12 +211,14 @@ async function displayNextPair() {
     // 1. Check if queue is empty and fetch if needed
     if (state.imageUrlQueue.length === 0) {
         updateStatus('Fetching new images...');
+        elements.imgWraps.forEach(el => el.classList.add('loading')); // Show skeleton
         await fetchImageBatch(); // Wait for it to finish
 
         // After await, check again in case fetch failed
         if (state.imageUrlQueue.length === 0) {
             updateStatus('Failed to load new images. Please refresh.');
             state.isVoting = true; // Block voting
+            elements.imgWraps.forEach(el => el.classList.remove('loading'));
             return; // Can't proceed
         }
     }
@@ -216,13 +228,28 @@ async function displayNextPair() {
     const nextPair = state.imageUrlQueue.shift();
     state.currentPair = nextPair;
 
-    // Set src to empty string first to trigger loading state (if CSS is set up)
+    // Set src to empty string first
     elements.imgA.src = "";
     elements.imgB.src = "";
 
-    // Set the actual source
+    // Add loading class
+    elements.imgWraps.forEach(el => el.classList.add('loading'));
+
+    // Set the actual source and wait for load to remove skeleton
+    const loadPromise = (img) => new Promise(resolve => {
+        img.onload = () => resolve();
+        img.onerror = () => resolve(); // Resolve anyway to show broken image icon or fallback
+    });
+
     elements.imgA.src = state.currentPair[0];
     elements.imgB.src = state.currentPair[1];
+
+    // Wait for both images to load (or fail) before removing skeleton
+    // This prevents the "pop" of one image loading before the other
+    Promise.all([loadPromise(elements.imgA), loadPromise(elements.imgB)]).then(() => {
+        elements.imgWraps.forEach(el => el.classList.remove('loading'));
+        state.lastPairLoadedTime = Date.now(); // Track when images were actually shown
+    });
 
     updateDisplayedCounts(); // Update counts for the *new* pair
     updateStatus('Please vote.');
@@ -257,11 +284,71 @@ function addSelectedEffect(side) {
 }
 
 // =============================================================================
+// GAMIFICATION
+// =============================================================================
+
+function updateGamification() {
+    state.sessionVoteCount++;
+    if (elements.voteCount) elements.voteCount.textContent = state.sessionVoteCount;
+
+    // Update progress bar (arbitrary scale for now, resets every 100 or just fills up)
+    // Let's make it fill up to the next milestone
+    const nextMilestone = state.milestones.find(m => m > state.sessionVoteCount) || 1000;
+    const prevMilestone = state.milestones.filter(m => m <= state.sessionVoteCount).pop() || 0;
+    const progress = ((state.sessionVoteCount - prevMilestone) / (nextMilestone - prevMilestone)) * 100;
+
+    if (elements.progressBar) {
+        elements.progressBar.style.width = `${Math.max(5, progress)}%`; // Min 5% for visibility
+    }
+
+    checkMilestones();
+}
+
+function initGamification() {
+    // Set initial state of progress bar
+    if (elements.progressBar) {
+        elements.progressBar.style.width = '5%';
+    }
+}
+
+function checkMilestones() {
+    if (state.milestones.includes(state.sessionVoteCount)) {
+        showToast(`🎉 Amazing! You've voted on ${state.sessionVoteCount} pairs!`);
+    }
+}
+
+function showToast(message) {
+    if (!elements.toastContainer) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<span>${message}</span>`;
+
+    elements.toastContainer.appendChild(toast);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        toast.addEventListener('animationend', () => {
+            toast.remove();
+        });
+    }, 3000);
+}
+
+// =============================================================================
 // VOTING LOGIC
 // =============================================================================
 
 async function vote(side) {
     if (state.isVoting) return; // Prevent double-clicks
+
+    // Speed check: Ensure user isn't voting too fast (e.g., < 800ms since load)
+    const now = Date.now();
+    if (state.lastPairLoadedTime && (now - state.lastPairLoadedTime < 800)) {
+        showToast("Whoa, too fast! 🏎️ Take a moment to compare.");
+        return;
+    }
+
     state.isVoting = true; // Block *new* votes immediately
 
     // 1. Get data for the vote before changing images
@@ -270,6 +357,7 @@ async function vote(side) {
 
     // 2. Update UI immediately
     addSelectedEffect(side);
+    updateGamification(); // Update stats immediately for satisfaction
 
     // 3. Start background submission
     // We don't await this. It runs in parallel.
@@ -280,7 +368,7 @@ async function vote(side) {
     // For UX reasons we also wait before setting the new image.
     setTimeout(async () => {
         await displayNextPair();
-    }, 1000);
+    }, 800); // Reduced delay for snappier feel
 }
 
 // =============================================================================
@@ -299,17 +387,6 @@ function setupEventListeners() {
         if (e.key === 'ArrowRight' || e.key === '2') vote('B');
     });
 
-    // Reset votes (if button is re-enabled)
-    // if (elements.resetBtn) {
-    //   elements.resetBtn.addEventListener('click', () => {
-    //     // Use a custom modal instead of confirm()
-    //     updateStatus('Resetting votes... (feature in dev)');
-    //     // localStorage.removeItem('two-image-votes');
-    //     // updateDisplayedCounts();
-    //     // updateStatus('Local votes reset.');
-    //   });
-    // }
-
     // Accessibility
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') document.body.classList.add('show-focus');
@@ -323,6 +400,9 @@ function setupEventListeners() {
 function init() {
     setupEventListeners();
     getOrCreateSession(); // Ensure session is created
+    getGroupIdentifier();
+    resetURL();
+    initGamification(); // Initialize gamification UI
     updateStatus('Loading first images...');
 
     // Kick off the whole process
