@@ -6,6 +6,7 @@ const state = {
     currentPair: [null, null], // [imageA_url, imageB_url]
     imageUrlQueue: [], // Stores upcoming pairs [ [a1, b1], [a2, b2], ... ]
     session: null,
+    groupIdentifier: null,
     isVoting: true,    // Start true to block voting until first images load
     isFetching: false, // Prevent simultaneous fetches
 };
@@ -49,7 +50,26 @@ function getOrCreateSession() {
             return s;
         })();
     }
+
     return state.session;
+}
+
+function getGroupIdentifier() {
+    if (!state.groupIdentifier) {
+        state.groupIdentifier = localStorage.getItem("groupIdentifier") || (() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const group = urlParams.get('group');
+            localStorage.setItem("groupIdentifier", group);
+            
+            return group;
+        })();
+    }
+    
+    return state.groupIdentifier;
+}
+
+function resetURL() {
+    window.history.pushState({}, document.title, "/");
 }
 
 /**
@@ -57,6 +77,8 @@ function getOrCreateSession() {
  */
 async function submitVoteInBackground(side, pair, imgSrcToCount) {
     console.log('Submitting vote...');
+
+    // TODO: Submit groupIdentifier
 
     try {
         const payload = {
@@ -323,6 +345,8 @@ function setupEventListeners() {
 function init() {
     setupEventListeners();
     getOrCreateSession(); // Ensure session is created
+    getGroupIdentifier();
+    resetURL();
     updateStatus('Loading first images...');
 
     // Kick off the whole process
