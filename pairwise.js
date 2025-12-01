@@ -7,6 +7,7 @@ const state = {
     imageUrlQueue: [], // Stores upcoming pairs [ [a1, b1], [a2, b2], ... ]
     session: null,
     groupIdentifier: null,
+    groupIdentifier: null,
     isVoting: true,    // Start true to block voting until first images load
     isFetching: false, // Prevent simultaneous fetches
     sessionVoteCount: 0, // Track votes in this session
@@ -51,6 +52,7 @@ function getOrCreateSession() {
             return s;
         })();
     }
+
     return state.session;
 }
 
@@ -77,6 +79,8 @@ function resetURL() {
  */
 async function submitVoteInBackground(side, pair, imgSrcToCount) {
     console.log('Submitting vote...');
+
+    // TODO: Submit groupIdentifier
 
     try {
         const payload = {
