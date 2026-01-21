@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="styles.css">
+    <title>Image Locator - Where is Image A?</title>
+</head>
+
+<body>
+    <main class="app" role="main">
+        <header>
+            <div class="header-content">
+                <div>
+                    <h1>Where is image A in image B?</h1>
+                    <p class="lead">Click the matching location on image B.</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="locator-grid">
+            <div id="cardA">
+                <div class="card-label">Image A (Reference)</div>
+                <div class="imgwrap" id="imgWrapA">
+                    <img id="imgA" alt="Image A" src="assets/reference_object_a.png">
+                </div>
+                <div class="meta">
+                    <div class="hint">Target object to find</div>
+                </div>
+            </div>
+
+            <div id="cardB">
+                <div class="card-label">Image B (Find it here)</div>
+                <div class="imgwrap target-wrap" id="imgWrapB">
+                    <img id="imgB" alt="Image B" src="assets/target_scene_b.png">
+                    <div id="marker" class="marker" style="display: none;"></div>
+                </div>
+                <div class="meta">
+                    <div class="hint">Click to place marker</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="actions">
+            <button id="notFoundBtn" class="secondary">I do not see where image A is in image B</button>
+            <button id="submitBtn" class="primary">Submit</button>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <footer>
+            <div>Made with ❤️</div>
+        </footer>
+        <div id="toast-container" class="toast-container"></div>
+    </main>
+    <script src="image_locator.js"></script>
+</body>
+
+</html>
