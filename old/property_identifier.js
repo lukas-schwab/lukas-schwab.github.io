@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('imageContainer');
+    const container = document.getElementById('imageWrapper');
     const img = document.getElementById('targetImage');
     const undoBtn = document.getElementById('undoBtn');
     const submitBtn = document.getElementById('submitBtn');

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css">
+  <title>Which Concept is better?</title>
+</head>
+
+<body>
+  <main class="app" role="main">
+    <header>
+      <div class="header-content">
+        <div>
+          <h1>Which concept is more descriptive?</h1>
+          <p class="lead">Click the better image to vote.</p>
+        </div>
+        <div class="gamification-stats">
+          <div class="vote-counter">
+            <div class="progress-fill" id="progressBar"></div>
+            <span class="vote-text"><span id="voteCount">0</span> votes</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="images" id="images">
+      <div class="card" id="cardA" tabindex="0" data-side="A">
+        <div class="imgwrap"><img id="imgA" alt="Image A" src=""> <!-- Start empty, will be loaded by JS -->
+        </div>
+        <div class="meta">
+          <div class="hint">Press ← or 1 to pick left</div>
+          <div class="count" id="metaA">Left</div>
+        </div>
+      </div>
+
+      <div class="card" id="cardB" tabindex="0" data-side="B">
+        <div class="imgwrap"><img id="imgB" alt="Image B" src=""> <!-- Start empty, will be loaded by JS -->
+        </div>
+        <div class="meta">
+          <div class="hint">Press → or 2 to pick right</div>
+          <div class="count" id="metaB">Right</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="status" id="status"></div>
+
+    <footer>
+      <div>Tip: click an image or press 1 / 2 / ← / →. Images are identified by URL or file name for counting.</div>
+      <div>Made with ❤️</div>
+    </footer>
+    <div id="toast-container" class="toast-container"></div>
+  </main>
+  <script src="pairwise.js"></script>
+</body>
+
+</html>
