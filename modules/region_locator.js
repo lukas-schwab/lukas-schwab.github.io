@@ -154,6 +154,7 @@ export const RegionLocator = {
             state.isDrawing = false;
             state.isRealInteraction = false;
             state.tempPoints = [];
+            showToast("Hold down longer to draw!");
             render();
         }
 
