@@ -105,7 +105,6 @@ p.lead {
 .imgwrap {
     flex: 1;
     display: flex;
-    align-items: center;
     justify-content: center;
     overflow: hidden;
     border-radius: 8px;
@@ -157,6 +156,7 @@ button {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    min-height: 44px;
 }
 
 button.primary {
@@ -198,6 +198,8 @@ input[type=text] {
     font-family: inherit;
     font-size: 15px;
     transition: border-color 0.2s;
+    min-height: 44px;
+    width: 100%;
 }
 
 input[type=text]:focus {
@@ -417,7 +419,19 @@ input[type=range]::-webkit-slider-thumb {
 
 .input-group {
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.input-group input[type=text] {
+    flex: 1 1 auto;
+    min-width: 220px;
+}
+
+.input-group button {
+    flex: 0 0 auto;
+    min-width: 140px;
 }
 
 .char-count {
@@ -453,9 +467,15 @@ input[type=range]::-webkit-slider-thumb {
 .actions {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
     flex-shrink: 0;
     margin-top: 1rem;
+}
+
+.actions button {
+    min-width: 140px;
 }
 
 /* Property Identifier */
@@ -479,7 +499,6 @@ input[type=range]::-webkit-slider-thumb {
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
     display: flex;
-    align-items: center;
     justify-content: center;
     min-height: 0;
 }
@@ -493,9 +512,7 @@ input[type=range]::-webkit-slider-thumb {
 .property-id-wrapper .imgwrap img {
     display: block;
     width: 100%;
-    height: auto;
     max-width: 100%;
-    max-height: 60vh;
     border-radius: 12px;
     object-fit: contain;
 }
@@ -507,6 +524,10 @@ input[type=range]::-webkit-slider-thumb {
     gap: 1rem;
     width: 100%;
     flex-shrink: 0;
+}
+
+.similarity-container > button {
+    align-self: flex-end;
 }
 
 .slider-section {
@@ -581,14 +602,6 @@ input[type=range]::-webkit-slider-thumb {
         font-size: 14px;
     }
     
-    .property-id-wrapper .imgwrap img {
-        max-height: 55vh;
-    }
-    
-    .imgwrap {
-        max-height: 45vh;
-    }
-    
     .locator-grid,
     .images {
         gap: 14px;
@@ -606,14 +619,6 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 @media (max-height: 900px) {
-    .property-id-wrapper .imgwrap img {
-        max-height: 50vh;
-    }
-    
-    .imgwrap {
-        max-height: 40vh;
-    }
-    
     .app {
         padding: 0.5rem;
     }
@@ -657,14 +662,6 @@ input[type=range]::-webkit-slider-thumb {
         font-size: 1.25rem;
     }
 
-    .property-id-wrapper .imgwrap img {
-        max-height: 45vh;
-    }
-
-    .imgwrap {
-        max-height: 40vh;
-    }
-
     .card {
         aspect-ratio: 4 / 1;
     }
@@ -674,7 +671,64 @@ input[type=range]::-webkit-slider-thumb {
     }
 }
 
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+    }
+
+    .app {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
+    h1 {
+        font-size: 1.1rem;
+    }
+
+    .actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .actions button,
+    .input-group button,
+    .input-group input[type=text],
+    .similarity-container > button {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .input-group {
+        align-items: stretch;
+    }
+
+    .images,
+    .locator-grid {
+        gap: 10px;
+    }
+}
+
 /* Region Locator */
+.locator-grid .imgwrap {
+    flex: 0 0 auto;
+    width: fit-content;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    align-self: flex-start;
+}
+
+.locator-grid .imgwrap img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
 .region-canvas {
     position: absolute;
     top: 0;

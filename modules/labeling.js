@@ -21,12 +21,12 @@ export const Labeling = {
             </div>
 
             <div class="input-section">
+                <div class="char-count"><span id="currentCharCount">0</span>/16</div>
                 <div class="input-group">
                     <input type="text" id="imageLabel" placeholder="Enter label here..." maxlength="16"
                         autocomplete="off">
                     <button id="submitBtn" class="primary">Submit</button>
                 </div>
-                <div class="char-count"><span id="currentCharCount">0</span>/16</div>
             </div>
         </section>
     `;

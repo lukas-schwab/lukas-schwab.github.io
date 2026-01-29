@@ -16,13 +16,13 @@ export const SimilarityLabeling = {
 
         <section class="images">
             <div>
-                <div class="imgwrap" style="margin-right: 1em">
+                <div class="imgwrap" style="margin: 1em">
                     <img src="${imgA}" alt="Reference Concept">
                 </div>
             </div>
 
             <div>
-                <div class="imgwrap" style="margin-left: 1em">
+                <div class="imgwrap" style="margin: 1em">
                     <img src="${imgB}" alt="Target Concept">
                 </div>
             </div>

@@ -156,6 +156,7 @@ function loadTask(index) {
         if (elements.storageView) {
             elements.storageView.style.display = 'block';
         }
+        window.scrollTo(0, 0); // Scroll to the top of the page for each new task
         return;
     }
 

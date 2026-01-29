@@ -209,7 +209,7 @@ pre {
 }
 
 .landing-title {
-    font-size: 3rem;
+    font-size: clamp(1.75rem, 4vw, 3rem);
     font-weight: 800;
     line-height: 1.2;
     margin: 0 0 1rem 0;
@@ -394,8 +394,48 @@ pre {
 }
 
 @media (max-width: 768px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+    }
+
     .landing-title {
-        font-size: 2rem;
+        font-size: clamp(1.6rem, 6vw, 2.2rem);
+    }
+
+    .main-content {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: visible;
+        padding: 1rem 0.75rem 2rem;
+    }
+
+    #task-container {
+        height: auto;
+    }
+
+    .landing-page {
+        padding: 1.5rem 0.75rem 2rem;
+        min-height: auto;
+    }
+
+    .landing-hero {
+        margin-bottom: 2rem;
+    }
+
+    .landing-subtitle {
+        font-size: 1rem;
+    }
+
+    .landing-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .landing-start-btn {
+        width: 100%;
+        max-width: 320px;
+        justify-content: center;
     }
 
     .landing-subtitle {
