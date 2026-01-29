@@ -2,8 +2,8 @@ import { storage } from './storage.js';
 
 export const SimilarityLabeling = {
     render: (data = {}) => {
-        const imgA = data.imgA || 'assets/reference_object_a.png';
-        const imgB = data.imgB || 'assets/target_scene_b.png';
+        const imgA = data.imgA || 'assets/concepts/concept_0.png';
+        const imgB = data.imgB || 'assets/concepts/concept_1.png';
         return `
         <header>
             <div class="header-content">
@@ -16,13 +16,13 @@ export const SimilarityLabeling = {
 
         <section class="images">
             <div>
-                <div class="imgwrap aspect-10-1">
+                <div class="imgwrap" style="margin-right: 1em">
                     <img src="${imgA}" alt="Reference Concept">
                 </div>
             </div>
 
             <div>
-                <div class="imgwrap aspect-10-1">
+                <div class="imgwrap" style="margin-left: 1em">
                     <img src="${imgB}" alt="Target Concept">
                 </div>
             </div>
@@ -46,10 +46,8 @@ export const SimilarityLabeling = {
                     </div>
                 </div>
 
-                <div class="submit-wrapper">
-                    <button id="submitBtn" class="primary">Submit</button>
                 </div>
-            </div>
+            <button id="submitBtn" class="primary">Submit</button>
         </section>
         <div class="status" id="status"></div>
     `;

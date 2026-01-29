@@ -2,8 +2,8 @@ import { storage } from './storage.js';
 
 export const RegionLocator = {
     render: (data = {}) => {
-        const imgA = data.imgA || 'assets/reference_object_a.png';
-        const imgB = data.imgB || 'assets/target_scene_b.png';
+        const imgA = data.imgA || 'assets/patches/patch_3_0.png';
+        const imgB = data.imgB || 'assets/targets/img_0.png';
         return `
         <header>
             <div class="header-content">

@@ -90,6 +90,14 @@ export class GlobalStorage {
     getResults() {
         return this.results;
     }
+
+    hasVisited() {
+        return localStorage.getItem('hasVisited') === 'true';
+    }
+
+    markVisited() {
+        localStorage.setItem('hasVisited', 'true');
+    }
 }
 
 export const storage = new GlobalStorage();

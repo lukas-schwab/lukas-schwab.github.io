@@ -2,7 +2,7 @@ import { storage } from './storage.js';
 
 export const PropertyIdentifier = {
     render: (data = {}) => {
-        const img = data.img || 'assets/target_scene_b.png';
+        const img = data.img || 'assets/targets/img_0.png';
         return `
         <header>
             <h1>Click on all the properties you can identify in this image.</h1>
@@ -38,21 +38,33 @@ export const PropertyIdentifier = {
 
         const handleDown = (e) => {
             e.preventDefault();
-            const rect = img.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const imgRect = img.getBoundingClientRect();
+            
+            // Calculate click position relative to the wrapper
+            const clickX = e.clientX - wrapperRect.left;
+            const clickY = e.clientY - wrapperRect.top;
+            
+            // Calculate click position relative to the image
+            const imgX = e.clientX - imgRect.left;
+            const imgY = e.clientY - imgRect.top;
 
-            if (x < 0 || x > rect.width || y < 0 || y > rect.height) return;
+            // Check if click is within image bounds
+            if (imgX < 0 || imgX > imgRect.width || imgY < 0 || imgY > imgRect.height) return;
 
-            const normX = x / rect.width;
-            const normY = y / rect.height;
+            // Calculate normalized position relative to the image
+            const normX = imgX / imgRect.width;
+            const normY = imgY / imgRect.height;
+            
+            // Calculate pixel coordinates on the original image
             const pixelX = Math.round(normX * img.naturalWidth);
             const pixelY = Math.round(normY * img.naturalHeight);
 
+            // Position marker relative to wrapper using wrapper coordinates
             const markerElement = document.createElement('div');
             markerElement.className = 'marker';
-            markerElement.style.left = `${normX * 100}%`;
-            markerElement.style.top = `${normY * 100}%`;
+            markerElement.style.left = `${clickX}px`;
+            markerElement.style.top = `${clickY}px`;
             wrapper.appendChild(markerElement);
 
             markers.push({ pixelX, pixelY, element: markerElement });

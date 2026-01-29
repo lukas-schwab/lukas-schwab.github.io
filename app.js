@@ -24,6 +24,7 @@ const elements = {
 let currentCleanup = null;
 let currentTaskIndex = 0;
 let taskList = [];
+let tasksLoaded = false;
 
 // Dummy function that acts like it receives a JSON from an API
 async function fetchTasksFromApi() {
@@ -34,27 +35,27 @@ async function fetchTasksFromApi() {
                 {
                     type: 'image_region_locator',
                     assets: {
-                        imgA: 'assets/reference_object_a.png',
-                        imgB: 'assets/target_scene_b.png'
+                        imgA: 'assets/patches/patch_3_0.png',
+                        imgB: 'assets/targets/img_0.png'
                     }
                 },
                 {
                     type: 'labeling',
                     assets: {
-                        img: 'assets/reference_object_a.png'
+                        img: 'assets/patches/patch_3_0.png'
                     }
                 },
                 {
                     type: 'property_identifier',
                     assets: {
-                        img: 'assets/target_scene_b.png'
+                        img: 'assets/targets/img_0.png'
                     }
                 },
                 {
                     type: 'similarity_labeling',
                     assets: {
-                        imgA: 'assets/reference_object_a.png',
-                        imgB: 'assets/target_scene_b.png'
+                        imgA: 'assets/concepts/concept_0.png',
+                        imgB: 'assets/concepts/concept_1.png'
                     }
                 }
             ]);
@@ -74,6 +75,72 @@ function showToast(message) {
         toast.classList.add('fade-out');
         toast.addEventListener('animationend', () => toast.remove());
     }, 3000);
+}
+
+function showLandingPage() {
+    elements.taskContainer.innerHTML = `
+        <div class="landing-page">
+            <div class="landing-hero">
+                <div class="landing-badge">Research Study</div>
+                <h1 class="landing-title">
+                    <span class="gradient-text">Concept Interpretability</span>
+                    Study
+                </h1>
+                <p class="landing-subtitle">
+                    Help advance machine learning interpretability through human perception research
+                </p>
+            </div>
+
+            <div class="landing-content">
+                <div class="landing-cards">
+                    <div class="landing-card">
+                        <div class="card-icon">📋</div>
+                        <h3>What to Expect</h3>
+                        <p>Complete ${taskList.length} interactive tasks involving image analysis, region selection, labeling, and similarity comparison.</p>
+                    </div>
+                    <div class="landing-card">
+                        <div class="card-icon">⏱️</div>
+                        <h3>Time Commitment</h3>
+                        <p>Approximately 5-10 minutes to complete all tasks at your own pace.</p>
+                    </div>
+                    <div class="landing-card">
+                        <div class="card-icon">🔒</div>
+                        <h3>Privacy First</h3>
+                        <p>All data is fully pseudonymized. Only task responses are collected—no personal information.</p>
+                    </div>
+                </div>
+
+                <div class="landing-features">
+                    <div class="feature-item">
+                        <span class="check-icon">✓</span>
+                        <span>Progress automatically saved</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check-icon">✓</span>
+                        <span>No registration required</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check-icon">✓</span>
+                        <span>Mobile-friendly interface</span>
+                    </div>
+                </div>
+
+                <button class="landing-start-btn" id="start-tasks-btn">
+                    <span>Begin Study</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Add event listener to start button
+    const startButton = document.getElementById('start-tasks-btn');
+    if (startButton) {
+        startButton.addEventListener('click', () => {
+            storage.markVisited();
+            loadTask(0);
+        });
+    }
 }
 
 function loadTask(index) {
@@ -171,5 +238,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Fetch task sequence from dummy API
     taskList = await fetchTasksFromApi();
-    loadTask(0);
+    tasksLoaded = true;
+    
+    // Show landing page only if user hasn't visited before
+    // if (storage.hasVisited()) {
+    //     loadTask(0);
+    // } else {
+    //     showLandingPage();
+    // }
+
+    // always show landing page
+    showLandingPage();
 });

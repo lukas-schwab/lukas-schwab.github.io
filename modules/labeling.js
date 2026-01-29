@@ -2,13 +2,13 @@ import { storage } from './storage.js';
 
 export const Labeling = {
     render: (data = {}) => {
-        const img = data.img || 'assets/reference_object_a.png';
+        const img = data.img || 'assets/patches/patch_3_0.png';
         return `
         <header>
             <div class="header-content">
                 <div>
                     <h1>Enter a label for this image</h1>
-                    <p class="lead">Keep it short and descriptive (max 16 chars).</p>
+                    <p class="lead">Keep it short and descriptive.</p>
                 </div>
             </div>
         </header>
