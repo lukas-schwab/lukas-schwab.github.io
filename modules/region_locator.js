@@ -150,11 +150,12 @@ export const RegionLocator = {
             if (state.isRealInteraction && duration >= 200 && state.tempPoints.length > 2) {
                 state.points = [...state.tempPoints];
                 state.regionPlaced = true;
+            } else {
+                showToast("Hold down longer to draw!");
             }
             state.isDrawing = false;
             state.isRealInteraction = false;
             state.tempPoints = [];
-            showToast("Hold down longer to draw!");
             render();
         }
 
