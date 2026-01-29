@@ -1,0 +1,45 @@
+<header>
+    <div class="header-content">
+        <div>
+            <h1>How similar are these two image groups?</h1>
+            <p class="lead">Use the slider below to rank similarity from 1 (not similar) to 5 (identical).</p>
+        </div>
+    </div>
+</header>
+
+<section class="images">
+    <div>
+        <div class="imgwrap" style="margin: 1em">
+            <img id="similarityImgA" alt="Reference Concept">
+        </div>
+    </div>
+
+    <div>
+        <div class="imgwrap" style="margin: 1em">
+            <img id="similarityImgB" alt="Target Concept">
+        </div>
+    </div>
+</section>
+
+<section class="similarity-container">
+    <div class="slider-section">
+        <div class="slider-label-row">
+            <span>Not similar at all</span>
+            <span>Very similar</span>
+        </div>
+
+        <div class="slider-wrapper">
+            <input type="range" id="similaritySlider" min="1" max="5" step="1" value="3">
+            <div class="ticks">
+                <div class="tick"><span></span>1</div>
+                <div class="tick"><span></span>2</div>
+                <div class="tick"><span></span>3</div>
+                <div class="tick"><span></span>4</div>
+                <div class="tick"><span></span>5</div>
+            </div>
+        </div>
+
+        </div>
+    <button id="submitBtn" class="primary">Submit</button>
+</section>
+<div class="status" id="status"></div>

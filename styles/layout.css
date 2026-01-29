@@ -1,0 +1,15 @@
+/* Layout Grid and Structure Styles */
+
+body {
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    padding: 0 !important;
+}

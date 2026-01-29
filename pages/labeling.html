@@ -1,0 +1,25 @@
+<header>
+    <div class="header-content">
+        <div>
+            <h1>Enter a label for this image</h1>
+            <p class="lead">Keep it short and descriptive.</p>
+        </div>
+    </div>
+</header>
+
+<section class="labeling-container">
+    <div class="image-preview">
+        <div class="imgwrap">
+            <img id="labelImage" alt="Image to label" draggable="false">
+        </div>
+    </div>
+
+    <div class="input-section">
+        <div class="char-count"><span id="currentCharCount">0</span>/16</div>
+        <div class="input-group">
+            <input type="text" id="imageLabel" placeholder="Enter label here..." maxlength="16"
+                autocomplete="off">
+            <button id="submitBtn" class="primary">Submit</button>
+        </div>
+    </div>
+</section>
