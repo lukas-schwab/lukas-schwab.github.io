@@ -8,7 +8,7 @@ export const RegionLocator = {
         <header>
             <div class="header-content">
                 <div>
-                    <h1>Encircle image A in image B</h1>
+                    <h1>Encircle image A in image B.</h1>
                     <p class="lead">Draw a boundary around the matching location on image B.</p>
                 </div>
             </div>

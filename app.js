@@ -156,7 +156,7 @@ function loadTask(index) {
         if (elements.storageView) {
             elements.storageView.style.display = 'block';
         }
-        window.scrollTo(0, 0); // Scroll to the top of the page for each new task
+        window.scrollTo(0, 0);
         return;
     }
 
@@ -188,6 +188,7 @@ function loadTask(index) {
     // Initialize task logic with assets
     currentCleanup = taskModule.init(elements.taskContainer, taskConfig.assets);
     currentTaskIndex = index;
+    window.scrollTo(0, 0); // Scroll to the top of the page for each new task
 }
 
 // Global Event Listeners
