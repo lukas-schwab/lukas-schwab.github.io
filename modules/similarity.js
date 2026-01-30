@@ -8,7 +8,7 @@ export const SimilarityLabeling = {
         <header>
             <div class="header-content">
                 <div>
-                    <h1>How similar are these two image groups?</h1>
+                    <h1>How similar are these two image groups to each other?</h1>
                     <p class="lead">Use the slider below to rank similarity from 1 (not similar) to 5 (identical).</p>
                 </div>
             </div>
@@ -74,7 +74,7 @@ export const SimilarityLabeling = {
             setTimeout(() => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit';
-            }, 2000);
+            }, 800);
         };
 
         submitBtn.addEventListener('click', handleSubmit);
