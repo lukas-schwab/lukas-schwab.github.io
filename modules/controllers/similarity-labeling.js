@@ -27,7 +27,7 @@ export const SimilarityLabelingController = {
             setTimeout(() => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit';
-            }, 2000);
+            }, 800);
         };
 
         submitBtn.addEventListener('click', handleSubmit);
