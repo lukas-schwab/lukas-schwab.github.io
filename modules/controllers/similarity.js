@@ -1,86 +1,84 @@
-import { storage } from './storage.js';
+/**
+ * Property Identifier Controller
+ * Handles clicking on properties in an image
+ */
+import { storage } from '../storage.js';
+import { showToast } from '../utils.js';
 
-export const SimilarityLabeling = {
-    render: (data = {}) => {
-        const imgA = data.imgA || 'assets/concepts/concept_0.png';
-        const imgB = data.imgB || 'assets/concepts/concept_1.png';
-        return `
-        <header>
-            <div class="header-content">
-                <div>
-                    <h1>How similar are these two image groups to each other?</h1>
-                    <p class="lead">Use the slider below to rank similarity from 1 (not similar) to 5 (identical).</p>
-                </div>
-            </div>
-        </header>
-
-        <section class="images">
-            <div>
-                <div class="imgwrap" style="margin: 1em">
-                    <img src="${imgA}" alt="Reference Concept">
-                </div>
-            </div>
-
-            <div>
-                <div class="imgwrap" style="margin: 1em">
-                    <img src="${imgB}" alt="Target Concept">
-                </div>
-            </div>
-        </section>
-
-        <section class="similarity-container">
-            <div class="slider-section">
-                <div class="slider-label-row">
-                    <span>Not similar at all</span>
-                    <span>Very similar</span>
-                </div>
-
-                <div class="slider-wrapper">
-                    <input type="range" id="similaritySlider" min="1" max="5" step="1" value="3">
-                    <div class="ticks">
-                        <div class="tick"><span></span>1</div>
-                        <div class="tick"><span></span>2</div>
-                        <div class="tick"><span></span>3</div>
-                        <div class="tick"><span></span>4</div>
-                        <div class="tick"><span></span>5</div>
-                    </div>
-                </div>
-
-                </div>
-            <button id="submitBtn" class="primary">Submit</button>
-        </section>
-        <div class="status" id="status"></div>
-    `;
-    },
-
+export const PropertyIdentifierController = {
     init: (container, data = {}) => {
-        const slider = container.querySelector('#similaritySlider');
+        const wrapper = container.querySelector('#imageWrapper');
+        const img = container.querySelector('#targetImage');
+        const undoBtn = container.querySelector('#undoBtn');
         const submitBtn = container.querySelector('#submitBtn');
-        const status = container.querySelector('#status');
 
-        function showToast(message) {
-            const event = new CustomEvent('app-toast', { detail: message });
-            window.dispatchEvent(event);
-        }
+        // Set image source
+        if (img) img.src = data.img || 'assets/targets/img_0.png';
 
-        const handleSubmit = () => {
-            const value = slider.value;
-            storage.saveResult('similarity_labeling', { rank: value }, data);
-            showToast(`Submitted: Score ${value}/5`);
+        let markers = [];
 
-            // Visual feedback on button
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitted!';
-            setTimeout(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit';
-            }, 800);
+        const handleDown = (e) => {
+            e.preventDefault();
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const imgRect = img.getBoundingClientRect();
+            
+            // Calculate click position relative to the wrapper
+            const clickX = e.clientX - wrapperRect.left;
+            const clickY = e.clientY - wrapperRect.top;
+            
+            // Calculate click position relative to the image
+            const imgX = e.clientX - imgRect.left;
+            const imgY = e.clientY - imgRect.top;
+
+            // Check if click is within image bounds
+            if (imgX < 0 || imgX > imgRect.width || imgY < 0 || imgY > imgRect.height) return;
+
+            // Calculate normalized position relative to the image
+            const normX = imgX / imgRect.width;
+            const normY = imgY / imgRect.height;
+            
+            // Calculate pixel coordinates on the original image
+            const pixelX = Math.round(normX * img.naturalWidth);
+            const pixelY = Math.round(normY * img.naturalHeight);
+
+            // Position marker relative to wrapper using wrapper coordinates
+            const markerElement = document.createElement('div');
+            markerElement.className = 'marker';
+            markerElement.style.left = `${clickX}px`;
+            markerElement.style.top = `${clickY}px`;
+            wrapper.appendChild(markerElement);
+
+            markers.push({ pixelX, pixelY, element: markerElement });
         };
 
+        const handleUndo = () => {
+            if (markers.length > 0) {
+                const last = markers.pop();
+                last.element.remove();
+            }
+        };
+
+        const handleSubmit = () => {
+            if (markers.length === 0) {
+                showToast("Please click on at least one property!");
+                return;
+            }
+            const results = markers.map(m => ({ x: m.pixelX, y: m.pixelY }));
+            storage.saveResult('property_identifier', { markers: results }, data);
+            showToast(`Submitted: ${results.length} markers`);
+
+            // Clear markers after submit
+            while (markers.length > 0) handleUndo();
+        };
+
+        wrapper.addEventListener('pointerdown', handleDown);
+        undoBtn.addEventListener('click', handleUndo);
         submitBtn.addEventListener('click', handleSubmit);
 
         return () => {
-            // Cleanup
+            wrapper.removeEventListener('pointerdown', handleDown);
+            undoBtn.removeEventListener('click', handleUndo);
+            submitBtn.removeEventListener('click', handleSubmit);
         };
     }
 };
