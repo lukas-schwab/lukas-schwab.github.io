@@ -5,8 +5,8 @@ export const PropertyIdentifier = {
         const img = data.img || 'assets/targets/img_0.png';
         return `
         <header>
-            <h1>Click on all the properties you can identify in this image.</h1>
-            <p class="lead">A property is defined as a distinct object or feature in the image.</p>
+            <h1>Click on all the components you can identify in this image.</h1>
+            <p class="lead">A component can be a distinct object or a part of an object.</p>
         </header>
 
         <div class="property-id-wrapper">
