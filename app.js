@@ -33,6 +33,12 @@ async function fetchTasksFromApi() {
         setTimeout(() => {
             resolve([
                 {
+                    type: 'property_identifier',
+                    assets: {
+                        img: 'assets/patches/patch_3_0.png'
+                    }
+                },
+                {
                     type: 'image_region_locator',
                     assets: {
                         imgA: 'assets/patches/patch_3_0.png',
@@ -42,13 +48,7 @@ async function fetchTasksFromApi() {
                 {
                     type: 'labeling',
                     assets: {
-                        img: 'assets/patches/patch_3_0.png'
-                    }
-                },
-                {
-                    type: 'property_identifier',
-                    assets: {
-                        img: 'assets/targets/img_0.png'
+                        img: 'assets/concepts/concept_0.png'
                     }
                 },
                 {
@@ -59,7 +59,7 @@ async function fetchTasksFromApi() {
                     }
                 }
             ]);
-        }, 500);
+        }, 1);
     });
 }
 
@@ -101,14 +101,13 @@ async function loadTask(index) {
             <div style="text-align: center; padding: 4rem 2rem;">
                 <h1>All tasks completed!</h1>
                 <p>Thank you for your participation.</p>
-                <button class="primary" onclick="location.reload()">Restart Sequence</button>
+                <button class="primary" onclick="location.reload()">Restart</button>
             </div>
         `;
         // Show results when all tasks are finished
         if (elements.storageView) {
             elements.storageView.style.display = 'block';
         }
-        window.scrollTo(0, 0);
         return;
     }
 
@@ -132,11 +131,11 @@ async function loadTask(index) {
     // Load and render page HTML
     const pageHTML = await loadPageHTML(taskMeta.page);
     elements.taskContainer.innerHTML = pageHTML;
+    window.scrollTo(0, 0);
 
     // Initialize task controller
     currentCleanup = taskMeta.controller.init(elements.taskContainer, taskConfig.assets);
     currentTaskIndex = index;
-    window.scrollTo(0, 0);
 }
 
 // Listen for task completion signal from storage
@@ -144,7 +143,7 @@ window.addEventListener('task-completed', () => {
     setTimeout(() => {
         currentTaskIndex++;
         loadTask(currentTaskIndex);
-    }, 1500); // Small delay to let user see "Submitted" toast
+    }, 250); // Small delay to let user see "Submitted" toast
 });
 
 // Global Event Listeners
