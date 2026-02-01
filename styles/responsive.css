@@ -158,6 +158,7 @@
     .landing-page {
         padding: 1.5rem 0.75rem 2rem;
         min-height: auto;
+        justify-content: flex-start;
     }
 
     .landing-hero {
