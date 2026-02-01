@@ -75,7 +75,14 @@ const translations = {
             clearConfirm: 'Are you sure you want to clear all collected results?',
             loadingTasks: 'Loading tasks, please wait...',
             uploadFailedToast: 'Upload error. Please contact the study administrator if this persists.',
-            noMoreTasks: 'No more tasks available at the moment. Please try again later.'
+            noMoreTasks: 'No more tasks available at the moment. Please try again later.',
+            holdLongerToDraw: 'Hold down longer to draw!',
+            drawOnImageB: 'You can only draw on Image B',
+            encircleRegion: 'Please encircle a region on Image B first!',
+            submittedRegion: 'Submitted: Region',
+            submittedRegionNotFound: 'Submitted: Region not found.',
+            enterLabel: 'Please enter a label.',
+            clickProperty: 'Please click on at least one property!'
         }
     },
     de: {
@@ -150,7 +157,14 @@ const translations = {
             clearConfirm: 'Sollen wirklich alle gesammelten Ergebnisse gelöscht werden?',
             loadingTasks: 'Aufgaben werden geladen, bitte warten...',
             uploadFailedToast: 'Übertragungsfehler. Bitte kontaktiere den Studienleiter, falls das Problem bestehen bleibt.',
-            noMoreTasks: 'Momentan sind keine weiteren Aufgaben verfügbar. Bitte versuche es später erneut.'
+            noMoreTasks: 'Momentan sind keine weiteren Aufgaben verfügbar. Bitte versuche es später erneut.',
+            holdLongerToDraw: 'Halte länger gedrückt, um zu zeichnen!',
+            drawOnImageB: 'Du kannst nur auf Bild B zeichnen',
+            encircleRegion: 'Bitte umkreise zuerst eine Region in Bild B!',
+            submittedRegion: 'Abgesendet: Region',
+            submittedRegionNotFound: 'Abgesendet: Region nicht gefunden.',
+            enterLabel: 'Bitte gib eine Bezeichnung ein.',
+            clickProperty: 'Bitte klicke auf mindestens eine Komponente!'
         }
     }
 };

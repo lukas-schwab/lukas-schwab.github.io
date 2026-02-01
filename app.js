@@ -5,6 +5,7 @@ import { PropertyIdentifierController } from './modules/controllers/similarity.j
 import { SimilarityLabelingController } from './modules/controllers/similarity-labeling.js';
 import { loadPageHTML } from './modules/utils.js';
 import { applyTranslations, t, getUserLanguage, setUserLanguage } from './modules/i18n.js';
+import { COOLDOWN } from './modules/constants.js';
 
 const taskControllers = {
     image_region_locator: { controller: RegionLocatorController, page: 'region-locator' },
@@ -94,7 +95,7 @@ function showToast(message) {
     setTimeout(() => {
         toast.classList.add('fade-out');
         toast.addEventListener('animationend', () => toast.remove());
-    }, 3000);
+    }, COOLDOWN.TOAST_DURATION);
 }
 
 // Helper to update UI elements that depend on the task list

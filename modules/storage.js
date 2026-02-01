@@ -1,3 +1,5 @@
+import { COOLDOWN } from './constants.js';
+
 export class GlobalStorage {
     constructor() {
         this.results = JSON.parse(localStorage.getItem('suite_results') || '[]');
@@ -101,7 +103,7 @@ export class GlobalStorage {
 
     isCoolingDown() {
         const cooldownKey = 'tasks_cooldown_timestamp';
-        const cooldownDuration = 3600000; // 1 hour
+        const cooldownDuration = COOLDOWN.TASK_FETCH;
         const cooldownStart = localStorage.getItem(cooldownKey);
         if (!cooldownStart) return false;
 

@@ -3,7 +3,8 @@
  * Handles image labeling input and submission
  */
 import { storage } from '../storage.js';
-import { showToast } from '../utils.js';
+import { showToast, applyButtonCooldown } from '../utils.js';
+import { t } from '../i18n.js';
 
 export const LabelingController = {
     init: (container, taskConfig = {}) => {
@@ -25,21 +26,15 @@ export const LabelingController = {
             const label = input.value.trim();
             if (label) {
                 storage.saveResult(taskId, 'labeling', { label }, data);
-                showToast(`Submitted: "${label}"`);
+                showToast(`${t('labeling.submitBtn')}: "${label}"`);
 
                 // Cooldown logic
-                submitBtn.disabled = true;
-                const originalText = submitBtn.textContent;
-                submitBtn.textContent = 'Submitted!';
-
-                setTimeout(() => {
+                applyButtonCooldown(submitBtn).then(() => {
                     input.value = '';
                     charCount.textContent = '0';
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                }, 2000);
+                });
             } else {
-                showToast('Please enter a label.');
+                showToast(t('messages.enterLabel'));
             }
         };
 

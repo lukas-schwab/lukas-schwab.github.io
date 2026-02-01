@@ -3,7 +3,9 @@
  * Handles canvas drawing and region selection logic
  */
 import { storage } from '../storage.js';
-import { showToast } from '../utils.js';
+import { showToast, applyMultiButtonCooldown } from '../utils.js';
+import { INTERACTION, DRAWING_STYLE } from '../constants.js';
+import { t } from '../i18n.js';
 
 export const RegionLocatorController = {
     init: (container, taskConfig = {}) => {
@@ -51,12 +53,12 @@ export const RegionLocatorController = {
         function drawPoints(pointsToDraw, isClosed) {
             if (!pointsToDraw || pointsToDraw.length < 2) return;
             ctx.beginPath();
-            ctx.strokeStyle = '#ff4757';
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = DRAWING_STYLE.strokeColor;
+            ctx.lineWidth = DRAWING_STYLE.lineWidth;
             ctx.lineJoin = 'round';
             ctx.lineCap = 'round';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'rgba(255, 71, 87, 0.8)';
+            ctx.shadowBlur = DRAWING_STYLE.shadowBlur;
+            ctx.shadowColor = DRAWING_STYLE.shadowColor;
 
             const firstPoint = pointsToDraw[0];
             ctx.moveTo(firstPoint.x * elements.canvas.width, firstPoint.y * elements.canvas.height);
@@ -68,7 +70,7 @@ export const RegionLocatorController = {
 
             if (isClosed && pointsToDraw.length > 2) {
                 ctx.closePath();
-                ctx.fillStyle = 'rgba(255, 71, 87, 0.2)';
+                ctx.fillStyle = `rgba(255, 71, 87, ${DRAWING_STYLE.fillOpacity})`;
                 ctx.fill();
             }
             ctx.stroke();
@@ -97,7 +99,7 @@ export const RegionLocatorController = {
             addPointTo(e, state.tempPoints);
             if (!state.isRealInteraction) {
                 const duration = Date.now() - state.startTime;
-                if (duration > 200 || state.tempPoints.length > 5) {
+                if (duration > INTERACTION.MIN_DRAW_DURATION || state.tempPoints.length > INTERACTION.MIN_DRAW_POINTS) {
                     state.isRealInteraction = true;
                 }
             }
@@ -107,11 +109,11 @@ export const RegionLocatorController = {
         function handlePointerUp(e) {
             if (!state.isDrawing) return;
             const duration = Date.now() - state.startTime;
-            if (state.isRealInteraction && duration >= 200 && state.tempPoints.length > 2) {
+            if (state.isRealInteraction && duration >= INTERACTION.MIN_DRAW_DURATION && state.tempPoints.length > 2) {
                 state.points = [...state.tempPoints];
                 state.regionPlaced = true;
             } else {
-                showToast("Hold down longer to draw!");
+                showToast(t('messages.holdLongerToDraw'));
             }
             state.isDrawing = false;
             state.isRealInteraction = false;
@@ -139,7 +141,7 @@ export const RegionLocatorController = {
         function handleSubmit() {
             if (elements.submitBtn.disabled) return;
             if (!state.regionPlaced) {
-                showToast("Please encircle a region on Image B first!");
+                showToast(t('messages.encircleRegion'));
                 return;
             }
             const results = state.points.map(p => ({
@@ -147,37 +149,25 @@ export const RegionLocatorController = {
                 y: Math.round(p.y * elements.imgB.naturalHeight)
             }));
             storage.saveResult(taskId, 'image_region_locator', { points: results }, data);
-            showToast("Submitted: Region");
+            showToast(t('messages.submittedRegion'));
 
             // Cooldown logic
-            elements.submitBtn.disabled = true;
-            elements.notFoundBtn.disabled = true;
-            const originalText = elements.submitBtn.textContent;
-            elements.submitBtn.textContent = 'Submitted!';
-
-            setTimeout(() => {
-                elements.submitBtn.disabled = false;
-                elements.notFoundBtn.disabled = false;
-                elements.submitBtn.textContent = originalText;
-            }, 2000);
+            applyMultiButtonCooldown(
+                [elements.submitBtn, elements.notFoundBtn],
+                elements.submitBtn
+            );
         }
 
         function handleNotFound() {
             if (elements.notFoundBtn.disabled) return;
             storage.saveResult(taskId, 'image_region_locator', { notFound: true }, data);
-            showToast("Submitted: Region not found.");
+            showToast(t('messages.submittedRegionNotFound'));
 
             // Cooldown logic
-            elements.submitBtn.disabled = true;
-            elements.notFoundBtn.disabled = true;
-            const originalText = elements.notFoundBtn.textContent;
-            elements.notFoundBtn.textContent = 'Submitted!';
-
-            setTimeout(() => {
-                elements.submitBtn.disabled = false;
-                elements.notFoundBtn.disabled = false;
-                elements.notFoundBtn.textContent = originalText;
-            }, 2000);
+            applyMultiButtonCooldown(
+                [elements.submitBtn, elements.notFoundBtn],
+                elements.notFoundBtn
+            );
         }
 
         elements.imgWrapB.addEventListener('pointerdown', handlePointerDown);
@@ -185,7 +175,7 @@ export const RegionLocatorController = {
         window.addEventListener('pointerup', handlePointerUp);
         elements.submitBtn.addEventListener('click', handleSubmit);
         elements.notFoundBtn.addEventListener('click', handleNotFound);
-        elements.cardA.addEventListener('click', () => showToast("You can only draw on Image B"));
+        elements.cardA.addEventListener('click', () => showToast(t('messages.drawOnImageB')));
 
         state.resizeObserver = new ResizeObserver(resizeCanvas);
         state.resizeObserver.observe(elements.imgWrapB);

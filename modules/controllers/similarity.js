@@ -3,7 +3,8 @@
  * Handles clicking on properties in an image
  */
 import { storage } from '../storage.js';
-import { showToast } from '../utils.js';
+import { showToast, applyButtonCooldown } from '../utils.js';
+import { t } from '../i18n.js';
 
 export const PropertyIdentifierController = {
     init: (container, taskConfig = {}) => {
@@ -62,7 +63,7 @@ export const PropertyIdentifierController = {
         const handleSubmit = () => {
             if (submitBtn.disabled) return;
             if (markers.length === 0) {
-                showToast("Please click on at least one property!");
+                showToast(t('messages.clickProperty'));
                 return;
             }
             const results = markers.map(m => ({ x: m.pixelX, y: m.pixelY }));
@@ -70,16 +71,10 @@ export const PropertyIdentifierController = {
             showToast(`Submitted: ${results.length} markers`);
 
             // Cooldown logic
-            submitBtn.disabled = true;
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Submitted!';
-
-            setTimeout(() => {
+            applyButtonCooldown(submitBtn).then(() => {
                 // Clear markers after submit
                 while (markers.length > 0) handleUndo();
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-            }, 2000);
+            });
         };
 
         wrapper.addEventListener('pointerdown', handleDown);

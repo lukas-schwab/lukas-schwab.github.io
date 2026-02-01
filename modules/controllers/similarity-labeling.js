@@ -3,7 +3,7 @@
  * Handles similarity rating via slider
  */
 import { storage } from '../storage.js';
-import { showToast } from '../utils.js';
+import { showToast, applyButtonCooldown } from '../utils.js';
 
 export const SimilarityLabelingController = {
     init: (container, taskConfig = {}) => {
@@ -23,12 +23,7 @@ export const SimilarityLabelingController = {
             showToast(`Submitted: Score ${value}/5`);
 
             // Visual feedback on button
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitted!';
-            setTimeout(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit';
-            }, 2000);
+            applyButtonCooldown(submitBtn);
         };
 
         submitBtn.addEventListener('click', handleSubmit);
