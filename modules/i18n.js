@@ -55,7 +55,7 @@ const translations = {
         completion: {
             title: 'All tasks completed!',
             thanks: 'Thank you for your participation.',
-            restartBtn: 'Restart',
+            moreTasksBtn: 'Give me more tasks!',
             uploading: 'Uploading results...',
             uploadFailed: 'Upload failed',
             retryBtn: 'Retry Upload',
@@ -74,7 +74,8 @@ const translations = {
             downloadStarted: 'Download started.',
             clearConfirm: 'Are you sure you want to clear all collected results?',
             loadingTasks: 'Loading tasks, please wait...',
-            uploadFailedToast: 'Upload error. Please contact the study administrator if this persists.'
+            uploadFailedToast: 'Upload error. Please contact the study administrator if this persists.',
+            noMoreTasks: 'No more tasks available at the moment. Please try again later.'
         }
     },
     de: {
@@ -129,7 +130,7 @@ const translations = {
         completion: {
             title: 'Alle Aufgaben erledigt!',
             thanks: 'Danke, dass du mitgemacht hast!',
-            restartBtn: 'Neu starten',
+            moreTasksBtn: 'Gib mir mehr Aufgaben!',
             uploading: 'Ergebnisse werden übertragen...',
             uploadFailed: 'Übertragung fehlgeschlagen',
             retryBtn: 'Erneut versuchen',
@@ -148,7 +149,8 @@ const translations = {
             downloadStarted: 'Download gestartet.',
             clearConfirm: 'Sollen wirklich alle gesammelten Ergebnisse gelöscht werden?',
             loadingTasks: 'Aufgaben werden geladen, bitte warten...',
-            uploadFailedToast: 'Übertragungsfehler. Bitte kontaktiere den Studienleiter, falls das Problem bestehen bleibt.'
+            uploadFailedToast: 'Übertragungsfehler. Bitte kontaktiere den Studienleiter, falls das Problem bestehen bleibt.',
+            noMoreTasks: 'Momentan sind keine weiteren Aufgaben verfügbar. Bitte versuche es später erneut.'
         }
     }
 };

@@ -98,6 +98,25 @@ export class GlobalStorage {
     markVisited() {
         localStorage.setItem('hasVisited', 'true');
     }
+
+    isCoolingDown() {
+        const cooldownKey = 'tasks_cooldown_timestamp';
+        const cooldownDuration = 3600000; // 1 hour
+        const cooldownStart = localStorage.getItem(cooldownKey);
+        if (!cooldownStart) return false;
+
+        const elapsed = Date.now() - parseInt(cooldownStart, 10);
+        if (elapsed >= cooldownDuration) {
+            localStorage.removeItem(cooldownKey);
+            return false;
+        }
+        return true;
+    }
+
+    setCooldown() {
+        const cooldownKey = 'tasks_cooldown_timestamp';
+        localStorage.setItem(cooldownKey, Date.now().toString());
+    }
 }
 
 export const storage = new GlobalStorage();

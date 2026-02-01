@@ -32,8 +32,12 @@ const MAX_BATCHES = 4;
 let currentBatchCount = 1;
 let nextBatchPromise = null;
 
+// Cooldown functions removed as they are now in storage.js
+
 // Function to fetch tasks from the API
 async function fetchTasksFromApi() {
+    if (storage.isCoolingDown()) return [];
+
     const userId = storage.getUserUuid();
     const url = `https://europe-west3-concept-interpretability-efded.cloudfunctions.net/get_tasks_batch?userId=${userId}`;
 
@@ -146,12 +150,18 @@ async function showLandingPage() {
     const startButton = document.getElementById('start-tasks-btn');
     if (startButton) {
         startButton.addEventListener('click', () => {
+            if (storage.isCoolingDown()) {
+                showToast(t('messages.noMoreTasks'));
+                return;
+            }
+
             if (!tasksLoaded) {
-                showToast(t('messages.loadingTasks') || 'Loading tasks, please wait...');
+                showToast(t('messages.loadingTasks'));
                 return;
             }
             if (taskList.length === 0) {
-                showToast('No tasks available at the moment.');
+                storage.setCooldown();
+                showToast(t('messages.noMoreTasks'));
                 return;
             }
             storage.markVisited();
@@ -161,6 +171,11 @@ async function showLandingPage() {
 }
 
 async function loadTask(index) {
+    if (currentCleanup) {
+        currentCleanup();
+        currentCleanup = null;
+    }
+
     if (index >= taskList.length) {
         // Current batch is finished. 
         // 1. Silent upload the current batch
@@ -198,15 +213,40 @@ async function loadTask(index) {
             <div style="text-align: center; padding: 4rem 2rem;">
                 <h1 data-i18n="completion.title">${t('completion.title')}</h1>
                 <p data-i18n="completion.thanks">${t('completion.thanks')}</p>
-                <button class="primary" onclick="location.reload()" data-i18n="completion.restartBtn">${t('completion.restartBtn')}</button>
+                <button class="primary" id="more-tasks-btn" data-i18n="completion.moreTasksBtn">${t('completion.moreTasksBtn')}</button>
             </div>
         `;
 
-        return;
-    }
+        // Apply translations to the newly added content
+        applyTranslations(elements.taskContainer);
 
-    if (currentCleanup) {
-        currentCleanup();
+        const moreTasksBtn = document.getElementById('more-tasks-btn');
+        if (moreTasksBtn) {
+            moreTasksBtn.addEventListener('click', async () => {
+                if (storage.isCoolingDown()) {
+                    showToast(t('messages.noMoreTasks'));
+                    return;
+                }
+
+                moreTasksBtn.disabled = true;
+                const originalText = moreTasksBtn.textContent;
+                moreTasksBtn.textContent = t('messages.loadingTasks');
+
+                const nextTasks = await fetchTasksFromApi();
+                if (nextTasks && nextTasks.length > 0) {
+                    taskList = nextTasks;
+                    currentBatchCount = 1;
+                    nextBatchPromise = null;
+                    loadTask(0);
+                } else {
+                    storage.setCooldown();
+                    showToast(t('messages.noMoreTasks'));
+                    moreTasksBtn.disabled = false;
+                    moreTasksBtn.textContent = originalText;
+                }
+            });
+        }
+        return;
     }
 
     // Pre-fetch the NEXT batch when the user starts the LAST task of the current batch
@@ -258,10 +298,7 @@ window.addEventListener('app-toast', (e) => {
 
 // Delegate landing page button click
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'start-tasks-btn') {
-        storage.markVisited();
-        loadTask(0);
-    }
+    // If we need any other global event delegation, it would go here
 });
 
 elements.clearStorage.addEventListener('click', () => {
