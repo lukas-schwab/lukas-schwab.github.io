@@ -7,6 +7,7 @@
     justify-content: flex-start;
     gap: 8px;
     align-self: flex-start;
+    z-index: 10;
 }
 
 /* Show language selector only on landing page */
