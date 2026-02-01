@@ -1,38 +1,38 @@
 <header>
     <div class="header-content">
         <div>
-            <h1>Encircle image A in image B.</h1>
-            <p class="lead">Draw a boundary around the matching location on image B.</p>
+            <h1 data-i18n="regionLocator.title">Encircle image A in image B.</h1>
+            <p class="lead" data-i18n="regionLocator.subtitle">Draw a boundary around the matching location on image B.</p>
         </div>
     </div>
 </header>
 
 <section class="locator-grid">
     <div id="cardA" style="height: fit-content;">
-        <div class="card-label">Image A (Reference)</div>
+        <div class="card-label" data-i18n="regionLocator.cardALabel">Image A (Reference)</div>
         <div class="imgwrap" id="imgWrapA">
             <img id="imgA" alt="Image A" draggable="false">
         </div>
         <div class="meta">
-            <div class="hint">Target object to find</div>
+            <div class="hint" data-i18n="regionLocator.hintA">Target object to find</div>
         </div>
     </div>
 
     <div id="cardB">
-        <div class="card-label">Image B (Draw here)</div>
+        <div class="card-label" data-i18n="regionLocator.cardBLabel">Image B (Draw here)</div>
         <div class="imgwrap target-wrap" id="imgWrapB">
             <img id="imgB" alt="Image B" draggable="false">
             <canvas id="regionCanvas" class="region-canvas"></canvas>
         </div>
         <div class="meta">
-            <div class="hint">Click and drag to encircle</div>
+            <div class="hint" data-i18n="regionLocator.hintB">Click and drag to encircle</div>
         </div>
     </div>
 </section>
 
 <div class="actions">
-    <button id="notFoundBtn" class="secondary">I do not see where image A is</button>
-    <button id="submitBtn" class="primary">Submit</button>
+    <button id="notFoundBtn" class="secondary" data-i18n="regionLocator.notFoundBtn">I do not see where image A is</button>
+    <button id="submitBtn" class="primary" data-i18n="regionLocator.submitBtn">Submit</button>
 </div>
 
 <div class="status" id="status"></div>

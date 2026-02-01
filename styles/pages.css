@@ -332,6 +332,7 @@ pre {
     align-items: center;
     justify-content: center;
     min-height: 100%;
+    position: relative;
     animation: fadeIn 0.6s ease-out;
 }
 

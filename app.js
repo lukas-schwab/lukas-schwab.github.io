@@ -4,6 +4,7 @@ import { LabelingController } from './modules/controllers/labeling.js';
 import { PropertyIdentifierController } from './modules/controllers/similarity.js';
 import { SimilarityLabelingController } from './modules/controllers/similarity-labeling.js';
 import { loadPageHTML } from './modules/utils.js';
+import { applyTranslations, t, getUserLanguage, setUserLanguage } from './modules/i18n.js';
 
 const taskControllers = {
     image_region_locator: { controller: RegionLocatorController, page: 'region-locator' },
@@ -81,9 +82,45 @@ async function showLandingPage() {
     const landingHTML = await loadPageHTML('landing');
     elements.taskContainer.innerHTML = landingHTML;
 
-    // Set task count
+    // Apply translations
+    applyTranslations(elements.taskContainer);
+
+    // Set task count with proper translation
     const taskCount = document.getElementById('taskCount');
-    if (taskCount) taskCount.textContent = taskList.length;
+    const card1Text = elements.taskContainer.querySelector('[data-i18n="landing.card1Text"]');
+    if (taskCount && card1Text) {
+        const translatedText = t('landing.card1Text').replace('{count}', taskList.length);
+        card1Text.textContent = translatedText;
+    }
+
+    // Set up language toggle
+    const languageToggle = document.getElementById('language-toggle');
+    const langLabelEn = document.getElementById('lang-label-en');
+    const langLabelDe = document.getElementById('lang-label-de');
+    
+    if (languageToggle && langLabelEn && langLabelDe) {
+        // Set initial state based on current language
+        const currentLang = getUserLanguage();
+        languageToggle.checked = currentLang === 'de';
+        langLabelEn.classList.toggle('active', currentLang === 'en');
+        langLabelDe.classList.toggle('active', currentLang === 'de');
+        
+        // Add change event listener
+        languageToggle.addEventListener('change', (e) => {
+            const newLang = e.target.checked ? 'de' : 'en';
+            setUserLanguage(newLang);
+            
+            // Update label states
+            langLabelEn.classList.toggle('active', newLang === 'en');
+            langLabelDe.classList.toggle('active', newLang === 'de');
+            
+            // Re-translate the task count
+            if (taskCount && card1Text) {
+                const translatedText = t('landing.card1Text').replace('{count}', taskList.length);
+                card1Text.textContent = translatedText;
+            }
+        });
+    }
 
     // Add event listener to start button
     const startButton = document.getElementById('start-tasks-btn');
@@ -99,9 +136,9 @@ async function loadTask(index) {
     if (index >= taskList.length) {
         elements.taskContainer.innerHTML = `
             <div style="text-align: center; padding: 4rem 2rem;">
-                <h1>All tasks completed!</h1>
-                <p>Thank you for your participation.</p>
-                <button class="primary" onclick="location.reload()">Restart</button>
+                <h1 data-i18n="completion.title">${t('completion.title')}</h1>
+                <p data-i18n="completion.thanks">${t('completion.thanks')}</p>
+                <button class="primary" onclick="location.reload()" data-i18n="completion.restartBtn">${t('completion.restartBtn')}</button>
             </div>
         `;
         // Show results when all tasks are finished
@@ -131,6 +168,10 @@ async function loadTask(index) {
     // Load and render page HTML
     const pageHTML = await loadPageHTML(taskMeta.page);
     elements.taskContainer.innerHTML = pageHTML;
+    
+    // Apply translations to the loaded content
+    applyTranslations(elements.taskContainer);
+    
     window.scrollTo(0, 0);
 
     // Initialize task controller
@@ -160,15 +201,15 @@ document.addEventListener('click', (e) => {
 });
 
 elements.clearStorage.addEventListener('click', () => {
-    if (confirm('Are you sure you want to clear all collected results?')) {
+    if (confirm(t('messages.clearConfirm'))) {
         storage.clear();
-        showToast('Storage cleared.');
+        showToast(t('messages.storageCleared'));
     }
 });
 
 elements.downloadResults.addEventListener('click', () => {
     storage.downloadResults();
-    showToast('Download started.');
+    showToast(t('messages.downloadStarted'));
 });
 
 // Subscribe to storage updates
@@ -178,6 +219,12 @@ storage.subscribe((results) => {
 
 // Initial load
 document.addEventListener('DOMContentLoaded', async () => {
+    // Set HTML lang attribute based on user's browser language
+    document.documentElement.lang = getUserLanguage();
+    
+    // Apply translations to static elements (like storage view)
+    applyTranslations();
+    
     storage.getGroupIdentifier();
     storage.getUserUuid();
     window.history.pushState({}, document.title, "/");

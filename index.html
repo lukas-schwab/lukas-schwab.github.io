@@ -34,21 +34,31 @@
     </nav> -->
 
     <main class="main-content">
+        <div class="language-selector">
+            <span class="lang-label" id="lang-label-en">EN</span>
+            <label class="lang-switch">
+                <input type="checkbox" id="language-toggle">
+                <span class="lang-slider"></span>
+            </label>
+            <span class="lang-label" id="lang-label-de">DE</span>
+        </div>
         <div id="task-container">
             <!-- Dynamic content here -->
         </div>
 
         <div class="storage-view" id="storage-view" style="display: none;">
             <h3>
-                Collected Results
+                <span data-i18n="storage.title">Collected Results</span>
                 <div style="display: flex; gap: 8px;">
-                    <button id="downloadResults" class="primary" style="padding: 4px 8px; font-size: 0.7rem;">Download
+                    <button id="downloadResults" class="primary" style="padding: 4px 8px; font-size: 0.7rem;"
+                        data-i18n="storage.downloadBtn">Download
                         JSON</button>
-                    <button id="clearStorage" class="secondary" style="padding: 4px 8px; font-size: 0.7rem;">Clear
+                    <button id="clearStorage" class="secondary" style="padding: 4px 8px; font-size: 0.7rem;"
+                        data-i18n="storage.clearBtn">Clear
                         All</button>
                 </div>
             </h3>
-            <p style="font-size: 0.8em;">All information is pseudonymized.</p>
+            <p style="font-size: 0.8em;" data-i18n="storage.disclaimer">All information is pseudonymized.</p>
             <pre id="results-display">[]</pre>
         </div>
     </main>

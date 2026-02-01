@@ -1,5 +1,84 @@
 /* Component Styles - UI elements like buttons, inputs, cards, etc. */
 
+/* Language Selector */
+.language-selector {
+    display: none;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    align-self: flex-start;
+}
+
+/* Show language selector only on landing page */
+#task-container:has(.landing-page) ~ .language-selector,
+.main-content:has(.landing-page) .language-selector {
+    display: flex;
+    margin-bottom: -2em;
+}
+
+.lang-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    transition: color 0.3s ease;
+    user-select: none;
+}
+
+.lang-label.active {
+    color: var(--accent);
+}
+
+.lang-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.lang-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.lang-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border: 1px solid var(--border);
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.lang-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .lang-slider:before {
+    transform: translateX(20px);
+}
+
+.lang-switch:hover .lang-slider {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+}
+
+.lang-switch:hover .lang-slider:before {
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+}
+
 /* Typography */
 header {
     margin-bottom: 1rem;

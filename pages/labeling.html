@@ -1,8 +1,8 @@
 <header>
     <div class="header-content">
         <div>
-            <h1>Find a single word that you think fits these images.</h1>
-            <p class="lead">Please type something even if you are unsure about it.</p>
+            <h1 data-i18n="labeling.title">Find a single word that you think fits these images.</h1>
+            <p class="lead" data-i18n="labeling.subtitle">Please type something even if you are unsure about it.</p>
         </div>
     </div>
 </header>
@@ -17,9 +17,9 @@
     <div class="input-section">
         <div class="char-count"><span id="currentCharCount">0</span>/16</div>
         <div class="input-group">
-            <input type="text" id="imageLabel" placeholder="Enter label here..." maxlength="16"
+            <input type="text" id="imageLabel" data-i18n-placeholder="labeling.placeholder" placeholder="Enter label here..." maxlength="16"
                 autocomplete="off">
-            <button id="submitBtn" class="primary">Submit</button>
+            <button id="submitBtn" class="primary" data-i18n="labeling.submitBtn">Submit</button>
         </div>
     </div>
 </section>
