@@ -6,7 +6,8 @@ import { storage } from '../storage.js';
 import { showToast } from '../utils.js';
 
 export const LabelingController = {
-    init: (container, data = {}) => {
+    init: (container, taskConfig = {}) => {
+        const { taskId, assets: data = {} } = taskConfig;
         const input = container.querySelector('#imageLabel');
         const submitBtn = container.querySelector('#submitBtn');
         const charCount = container.querySelector('#currentCharCount');
@@ -20,12 +21,23 @@ export const LabelingController = {
         };
 
         const handleSubmit = () => {
+            if (submitBtn.disabled) return;
             const label = input.value.trim();
             if (label) {
-                storage.saveResult('labeling', { label }, data);
+                storage.saveResult(taskId, 'labeling', { label }, data);
                 showToast(`Submitted: "${label}"`);
-                input.value = '';
-                charCount.textContent = '0';
+
+                // Cooldown logic
+                submitBtn.disabled = true;
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Submitted!';
+
+                setTimeout(() => {
+                    input.value = '';
+                    charCount.textContent = '0';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }, 2000);
             } else {
                 showToast('Please enter a label.');
             }

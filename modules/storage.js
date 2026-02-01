@@ -40,9 +40,9 @@ export class GlobalStorage {
         });
     }
 
-    saveResult(taskType, data, assets = null) {
+    saveResult(taskId, taskType, data, assets = null) {
         const entry = {
-            id: Date.now(),
+            taskId,
             taskType,
             timestamp: new Date().toISOString(),
             groupIdentifier: this.getGroupIdentifier(),

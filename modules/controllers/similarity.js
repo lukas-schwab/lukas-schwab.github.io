@@ -6,7 +6,8 @@ import { storage } from '../storage.js';
 import { showToast } from '../utils.js';
 
 export const PropertyIdentifierController = {
-    init: (container, data = {}) => {
+    init: (container, taskConfig = {}) => {
+        const { taskId, assets: data = {} } = taskConfig;
         const wrapper = container.querySelector('#imageWrapper');
         const img = container.querySelector('#targetImage');
         const undoBtn = container.querySelector('#undoBtn');
@@ -21,11 +22,11 @@ export const PropertyIdentifierController = {
             e.preventDefault();
             const wrapperRect = wrapper.getBoundingClientRect();
             const imgRect = img.getBoundingClientRect();
-            
+
             // Calculate click position relative to the wrapper
             const clickX = e.clientX - wrapperRect.left;
             const clickY = e.clientY - wrapperRect.top;
-            
+
             // Calculate click position relative to the image
             const imgX = e.clientX - imgRect.left;
             const imgY = e.clientY - imgRect.top;
@@ -36,7 +37,7 @@ export const PropertyIdentifierController = {
             // Calculate normalized position relative to the image
             const normX = imgX / imgRect.width;
             const normY = imgY / imgRect.height;
-            
+
             // Calculate pixel coordinates on the original image
             const pixelX = Math.round(normX * img.naturalWidth);
             const pixelY = Math.round(normY * img.naturalHeight);
@@ -59,16 +60,26 @@ export const PropertyIdentifierController = {
         };
 
         const handleSubmit = () => {
+            if (submitBtn.disabled) return;
             if (markers.length === 0) {
                 showToast("Please click on at least one property!");
                 return;
             }
             const results = markers.map(m => ({ x: m.pixelX, y: m.pixelY }));
-            storage.saveResult('property_identifier', { markers: results }, data);
+            storage.saveResult(taskId, 'property_identifier', { markers: results }, data);
             showToast(`Submitted: ${results.length} markers`);
 
-            // Clear markers after submit
-            while (markers.length > 0) handleUndo();
+            // Cooldown logic
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitted!';
+
+            setTimeout(() => {
+                // Clear markers after submit
+                while (markers.length > 0) handleUndo();
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }, 2000);
         };
 
         wrapper.addEventListener('pointerdown', handleDown);

@@ -6,7 +6,8 @@ import { storage } from '../storage.js';
 import { showToast } from '../utils.js';
 
 export const RegionLocatorController = {
-    init: (container, data = {}) => {
+    init: (container, taskConfig = {}) => {
+        const { taskId, assets: data = {} } = taskConfig;
         const elements = {
             imgA: container.querySelector('#imgA'),
             imgB: container.querySelector('#imgB'),
@@ -136,6 +137,7 @@ export const RegionLocatorController = {
         }
 
         function handleSubmit() {
+            if (elements.submitBtn.disabled) return;
             if (!state.regionPlaced) {
                 showToast("Please encircle a region on Image B first!");
                 return;
@@ -144,13 +146,38 @@ export const RegionLocatorController = {
                 x: Math.round(p.x * elements.imgB.naturalWidth),
                 y: Math.round(p.y * elements.imgB.naturalHeight)
             }));
-            storage.saveResult('image_region_locator', { points: results }, data);
+            storage.saveResult(taskId, 'image_region_locator', { points: results }, data);
             showToast("Submitted: Region");
+
+            // Cooldown logic
+            elements.submitBtn.disabled = true;
+            elements.notFoundBtn.disabled = true;
+            const originalText = elements.submitBtn.textContent;
+            elements.submitBtn.textContent = 'Submitted!';
+
+            setTimeout(() => {
+                elements.submitBtn.disabled = false;
+                elements.notFoundBtn.disabled = false;
+                elements.submitBtn.textContent = originalText;
+            }, 2000);
         }
 
         function handleNotFound() {
-            storage.saveResult('image_region_locator', { notFound: true }, data);
+            if (elements.notFoundBtn.disabled) return;
+            storage.saveResult(taskId, 'image_region_locator', { notFound: true }, data);
             showToast("Submitted: Region not found.");
+
+            // Cooldown logic
+            elements.submitBtn.disabled = true;
+            elements.notFoundBtn.disabled = true;
+            const originalText = elements.notFoundBtn.textContent;
+            elements.notFoundBtn.textContent = 'Submitted!';
+
+            setTimeout(() => {
+                elements.submitBtn.disabled = false;
+                elements.notFoundBtn.disabled = false;
+                elements.notFoundBtn.textContent = originalText;
+            }, 2000);
         }
 
         elements.imgWrapB.addEventListener('pointerdown', handlePointerDown);

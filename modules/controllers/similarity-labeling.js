@@ -6,7 +6,8 @@ import { storage } from '../storage.js';
 import { showToast } from '../utils.js';
 
 export const SimilarityLabelingController = {
-    init: (container, data = {}) => {
+    init: (container, taskConfig = {}) => {
+        const { taskId, assets: data = {} } = taskConfig;
         const slider = container.querySelector('#similaritySlider');
         const submitBtn = container.querySelector('#submitBtn');
         const imgA = container.querySelector('#similarityImgA');
@@ -18,7 +19,7 @@ export const SimilarityLabelingController = {
 
         const handleSubmit = () => {
             const value = slider.value;
-            storage.saveResult('similarity_labeling', { rank: value }, data);
+            storage.saveResult(taskId, 'similarity_labeling', { rank: value }, data);
             showToast(`Submitted: Score ${value}/5`);
 
             // Visual feedback on button
@@ -27,7 +28,7 @@ export const SimilarityLabelingController = {
             setTimeout(() => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit';
-            }, 800);
+            }, 2000);
         };
 
         submitBtn.addEventListener('click', handleSubmit);

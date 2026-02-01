@@ -27,41 +27,56 @@ let currentTaskIndex = 0;
 let taskList = [];
 let tasksLoaded = false;
 
-// Dummy function that acts like it receives a JSON from an API
+// Batch Configuration
+const MAX_BATCHES = 4;
+let currentBatchCount = 1;
+let nextBatchPromise = null;
+
+// Function to fetch tasks from the API
 async function fetchTasksFromApi() {
-    // Simulate API delay
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([
-                {
-                    type: 'property_identifier',
-                    assets: {
-                        img: 'assets/patches/patch_3_0.png'
-                    }
-                },
-                {
-                    type: 'image_region_locator',
-                    assets: {
-                        imgA: 'assets/patches/patch_3_0.png',
-                        imgB: 'assets/targets/img_0.png'
-                    }
-                },
-                {
-                    type: 'labeling',
-                    assets: {
-                        img: 'assets/concepts/concept_0.png'
-                    }
-                },
-                {
-                    type: 'similarity_labeling',
-                    assets: {
-                        imgA: 'assets/concepts/concept_0.png',
-                        imgB: 'assets/concepts/concept_1.png'
-                    }
-                }
-            ]);
-        }, 1);
-    });
+    const userId = storage.getUserUuid();
+    const url = `https://europe-west3-concept-interpretability-efded.cloudfunctions.net/get_tasks_batch?userId=${userId}`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const tasks = await response.json();
+        return tasks;
+    } catch (error) {
+        console.error('Could not fetch tasks:', error);
+        return [];
+    }
+}
+
+// Function to upload results to the API
+async function uploadResultsToApi() {
+    const results = storage.getResults();
+    if (results.length === 0) return true;
+
+    const url = 'https://europe-west3-concept-interpretability-efded.cloudfunctions.net/submit_results_batch';
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(results)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Upload failed! status: ${response.status}`);
+        }
+
+        // Clear local storage after successful upload of this batch
+        storage.clear();
+        return true;
+    } catch (error) {
+        console.error('Could not upload batch results:', error);
+        return false;
+    }
 }
 
 function showToast(message) {
@@ -78,6 +93,15 @@ function showToast(message) {
     }, 3000);
 }
 
+// Helper to update UI elements that depend on the task list
+function updateUIWithTasks() {
+    const card1Text = elements.taskContainer.querySelector('[data-i18n="landing.card1Text"]');
+    if (card1Text) {
+        const translatedText = t('landing.card1Text').replace('{count}', taskList.length);
+        card1Text.textContent = translatedText;
+    }
+}
+
 async function showLandingPage() {
     const landingHTML = await loadPageHTML('landing');
     elements.taskContainer.innerHTML = landingHTML;
@@ -85,39 +109,35 @@ async function showLandingPage() {
     // Apply translations
     applyTranslations(elements.taskContainer);
 
-    // Set task count with proper translation
-    const taskCount = document.getElementById('taskCount');
-    const card1Text = elements.taskContainer.querySelector('[data-i18n="landing.card1Text"]');
-    if (taskCount && card1Text) {
-        const translatedText = t('landing.card1Text').replace('{count}', taskList.length);
-        card1Text.textContent = translatedText;
+    // Set initial task count if tasks are already loaded
+    if (tasksLoaded) {
+        updateUIWithTasks();
     }
 
     // Set up language toggle
     const languageToggle = document.getElementById('language-toggle');
     const langLabelEn = document.getElementById('lang-label-en');
     const langLabelDe = document.getElementById('lang-label-de');
-    
+
     if (languageToggle && langLabelEn && langLabelDe) {
         // Set initial state based on current language
         const currentLang = getUserLanguage();
         languageToggle.checked = currentLang === 'de';
         langLabelEn.classList.toggle('active', currentLang === 'en');
         langLabelDe.classList.toggle('active', currentLang === 'de');
-        
+
         // Add change event listener
         languageToggle.addEventListener('change', (e) => {
             const newLang = e.target.checked ? 'de' : 'en';
             setUserLanguage(newLang);
-            
+
             // Update label states
             langLabelEn.classList.toggle('active', newLang === 'en');
             langLabelDe.classList.toggle('active', newLang === 'de');
-            
+
             // Re-translate the task count
-            if (taskCount && card1Text) {
-                const translatedText = t('landing.card1Text').replace('{count}', taskList.length);
-                card1Text.textContent = translatedText;
+            if (tasksLoaded) {
+                updateUIWithTasks();
             }
         });
     }
@@ -126,6 +146,14 @@ async function showLandingPage() {
     const startButton = document.getElementById('start-tasks-btn');
     if (startButton) {
         startButton.addEventListener('click', () => {
+            if (!tasksLoaded) {
+                showToast(t('messages.loadingTasks') || 'Loading tasks, please wait...');
+                return;
+            }
+            if (taskList.length === 0) {
+                showToast('No tasks available at the moment.');
+                return;
+            }
             storage.markVisited();
             loadTask(0);
         });
@@ -134,6 +162,38 @@ async function showLandingPage() {
 
 async function loadTask(index) {
     if (index >= taskList.length) {
+        // Current batch is finished. 
+        // 1. Silent upload the current batch
+        uploadResultsToApi().then(success => {
+            if (!success) {
+                showToast(t('messages.uploadFailedToast') || 'Connection error. Progress might not be saved.');
+            }
+        });
+
+        // 2. Check if we have more batches to go
+        if (currentBatchCount < MAX_BATCHES) {
+            if (nextBatchPromise) {
+                const nextTasks = await nextBatchPromise;
+                if (nextTasks && nextTasks.length > 0) {
+                    taskList = [...taskList, ...nextTasks];
+                    currentBatchCount++;
+                    nextBatchPromise = null;
+                    // Proceed to first task of new batch
+                    loadTask(index);
+                    return;
+                }
+            }
+            // If promise wasn't ready or failed, try fetching once more
+            const nextTasks = await fetchTasksFromApi();
+            if (nextTasks && nextTasks.length > 0) {
+                taskList = [...taskList, ...nextTasks];
+                currentBatchCount++;
+                loadTask(index);
+                return;
+            }
+        }
+
+        // All batches completed
         elements.taskContainer.innerHTML = `
             <div style="text-align: center; padding: 4rem 2rem;">
                 <h1 data-i18n="completion.title">${t('completion.title')}</h1>
@@ -141,15 +201,19 @@ async function loadTask(index) {
                 <button class="primary" onclick="location.reload()" data-i18n="completion.restartBtn">${t('completion.restartBtn')}</button>
             </div>
         `;
-        // Show results when all tasks are finished
-        if (elements.storageView) {
-            elements.storageView.style.display = 'block';
-        }
+
         return;
     }
 
     if (currentCleanup) {
         currentCleanup();
+    }
+
+    // Pre-fetch the NEXT batch when the user starts the LAST task of the current batch
+    const currentBatchLastIndex = taskList.length - 1;
+    if (index === currentBatchLastIndex && currentBatchCount < MAX_BATCHES && !nextBatchPromise) {
+        console.log(`Pre-fetching batch ${currentBatchCount + 1}...`);
+        nextBatchPromise = fetchTasksFromApi();
     }
 
     // Hide results when entering a task
@@ -168,14 +232,14 @@ async function loadTask(index) {
     // Load and render page HTML
     const pageHTML = await loadPageHTML(taskMeta.page);
     elements.taskContainer.innerHTML = pageHTML;
-    
+
     // Apply translations to the loaded content
     applyTranslations(elements.taskContainer);
-    
+
     window.scrollTo(0, 0);
 
     // Initialize task controller
-    currentCleanup = taskMeta.controller.init(elements.taskContainer, taskConfig.assets);
+    currentCleanup = taskMeta.controller.init(elements.taskContainer, taskConfig);
     currentTaskIndex = index;
 }
 
@@ -221,18 +285,23 @@ storage.subscribe((results) => {
 document.addEventListener('DOMContentLoaded', async () => {
     // Set HTML lang attribute based on user's browser language
     document.documentElement.lang = getUserLanguage();
-    
+
     // Apply translations to static elements (like storage view)
     applyTranslations();
-    
+
     storage.getGroupIdentifier();
     storage.getUserUuid();
     window.history.pushState({}, document.title, "/");
 
-    // Fetch task sequence from dummy API
-    taskList = await fetchTasksFromApi();
-    tasksLoaded = true;
-    
-    // always show landing page
-    showLandingPage();
+    // Start showing landing page immediately
+    const landingPromise = showLandingPage();
+
+    // Fetch task sequence from API in the background
+    fetchTasksFromApi().then(tasks => {
+        taskList = tasks;
+        tasksLoaded = true;
+        updateUIWithTasks();
+    });
+
+    await landingPromise;
 });

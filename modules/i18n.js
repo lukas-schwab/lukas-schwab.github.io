@@ -55,7 +55,11 @@ const translations = {
         completion: {
             title: 'All tasks completed!',
             thanks: 'Thank you for your participation.',
-            restartBtn: 'Restart'
+            restartBtn: 'Restart',
+            uploading: 'Uploading results...',
+            uploadFailed: 'Upload failed',
+            retryBtn: 'Retry Upload',
+            returnBtn: 'Return to Start'
         },
         // Storage View
         storage: {
@@ -68,7 +72,9 @@ const translations = {
         messages: {
             storageCleared: 'Storage cleared.',
             downloadStarted: 'Download started.',
-            clearConfirm: 'Are you sure you want to clear all collected results?'
+            clearConfirm: 'Are you sure you want to clear all collected results?',
+            loadingTasks: 'Loading tasks, please wait...',
+            uploadFailedToast: 'Upload error. Please contact the study administrator if this persists.'
         }
     },
     de: {
@@ -123,7 +129,11 @@ const translations = {
         completion: {
             title: 'Alle Aufgaben erledigt!',
             thanks: 'Danke, dass du mitgemacht hast!',
-            restartBtn: 'Neu starten'
+            restartBtn: 'Neu starten',
+            uploading: 'Ergebnisse werden übertragen...',
+            uploadFailed: 'Übertragung fehlgeschlagen',
+            retryBtn: 'Erneut versuchen',
+            returnBtn: 'Zurück zum Start'
         },
         // Storage View
         storage: {
@@ -136,7 +146,9 @@ const translations = {
         messages: {
             storageCleared: 'Speicher gelöscht.',
             downloadStarted: 'Download gestartet.',
-            clearConfirm: 'Sollen wirklich alle gesammelten Ergebnisse gelöscht werden?'
+            clearConfirm: 'Sollen wirklich alle gesammelten Ergebnisse gelöscht werden?',
+            loadingTasks: 'Aufgaben werden geladen, bitte warten...',
+            uploadFailedToast: 'Übertragungsfehler. Bitte kontaktiere den Studienleiter, falls das Problem bestehen bleibt.'
         }
     }
 };
@@ -151,7 +163,7 @@ export function getUserLanguage() {
     if (savedLang && ['en', 'de'].includes(savedLang)) {
         return savedLang;
     }
-    
+
     // Fall back to browser language
     const browserLang = navigator.language.split('-')[0]; // 'de', 'en', etc.
     return ['en', 'de'].includes(browserLang) ? browserLang : 'en';
@@ -194,7 +206,7 @@ export function applyTranslations(container = document) {
         const key = el.getAttribute('data-i18n');
         el.textContent = t(key, lang);
     });
-    
+
     // Handle placeholder translations
     container.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
