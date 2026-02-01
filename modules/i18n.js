@@ -34,13 +34,13 @@ const translations = {
         },
         // Region Locator Page
         regionLocator: {
-            title: 'Encircle image A in image B.',
-            subtitle: 'Draw a boundary around the matching location on image B.',
+            title: 'Encircle image A in the schema down below.',
+            subtitle: 'Try to draw a boundary around the matching location of image A on the schema.',
             cardALabel: 'Image A (Reference)',
-            cardBLabel: 'Image B (Draw here)',
+            cardBLabel: 'Schema (draw here)',
             hintA: 'Target object to find',
             hintB: 'Click and drag to encircle',
-            notFoundBtn: 'I do not see where image A is',
+            notFoundBtn: 'No matching location found',
             submitBtn: 'Submit'
         },
         // Similarity Labeling Page
@@ -116,13 +116,13 @@ const translations = {
         },
         // Region Locator Page
         regionLocator: {
-            title: 'Umkreise Bild A in Bild B.',
-            subtitle: 'Zeichne eine Grenze um die entsprechende Stelle in Bild B.',
+            title: 'Umkreise Bild A in dem Schema unten.',
+            subtitle: 'Zeichne eine Region um die entsprechende Stelle im Schema.',
             cardALabel: 'Bild A (Vorlage)',
-            cardBLabel: 'Bild B (Hier zeichnen)',
+            cardBLabel: 'Schema (Hier zeichnen)',
             hintA: 'Das zu findende Objekt',
             hintB: 'Klicken und ziehen zum Umkreisen',
-            notFoundBtn: 'Ich sehe Bild A nicht',
+            notFoundBtn: 'Keine Zuordnung möglich',
             submitBtn: 'Absenden'
         },
         // Similarity Labeling Page
@@ -160,9 +160,9 @@ const translations = {
             noMoreTasks: 'Momentan sind keine weiteren Aufgaben verfügbar. Bitte versuche es später erneut.',
             holdLongerToDraw: 'Halte länger gedrückt, um zu zeichnen!',
             drawOnImageB: 'Du kannst nur auf Bild B zeichnen',
-            encircleRegion: 'Bitte umkreise zuerst eine Region in Bild B!',
+            encircleRegion: 'Bitte umkreise zuerst eine Region im Schema!',
             submittedRegion: 'Abgesendet: Region',
-            submittedRegionNotFound: 'Abgesendet: Region nicht gefunden.',
+            submittedRegionNotFound: 'Abgesendet: Nicht zuordenbar.',
             enterLabel: 'Bitte gib eine Bezeichnung ein.',
             clickProperty: 'Bitte klicke auf mindestens eine Komponente!'
         }

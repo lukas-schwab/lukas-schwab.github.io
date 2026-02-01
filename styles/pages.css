@@ -69,6 +69,11 @@
     flex-direction: column;
     align-items: center;
     height: 100vh;
+    /* Fallback */
+    height: 100dvh;
+    /* Modern browsers */
+    height: calc(var(--vh, 1vh) * 100);
+    /* Custom property */
     overflow-y: auto;
     box-sizing: border-box;
 }
@@ -278,7 +283,7 @@ pre {
     flex-shrink: 0;
 }
 
-.similarity-container > button {
+.similarity-container>button {
     align-self: flex-end;
 }
 
@@ -341,6 +346,7 @@ pre {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -358,6 +364,7 @@ pre {
         opacity: 0;
         transform: translateY(-30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -412,6 +419,7 @@ pre {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

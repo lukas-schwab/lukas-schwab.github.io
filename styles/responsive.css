@@ -5,30 +5,30 @@
     .app {
         padding: 0.75rem;
     }
-    
+
     header {
         margin-bottom: 0.75rem;
     }
-    
+
     h1 {
         font-size: 2rem;
         margin: 0 0 4px 0;
     }
-    
+
     p.lead {
         font-size: 1rem;
     }
-    
+
     .locator-grid,
     .images {
         gap: 14px;
         margin-bottom: 0.75rem;
     }
-    
+
     .similarity-container {
         gap: 0.75rem;
     }
-    
+
     .slider-section {
         padding: 1.25rem;
         gap: 12px;
@@ -39,7 +39,7 @@
     .app {
         padding: 0.5rem;
     }
-    
+
     header {
         margin-bottom: 0.5rem;
     }
@@ -48,7 +48,7 @@
         font-size: 2rem;
         margin: 0 0 4px 0;
     }
-    
+
     .locator-grid,
     .images {
         margin-bottom: 0.5rem;
@@ -93,13 +93,19 @@
     body {
         height: auto;
         min-height: 100vh;
+        min-height: 100dvh;
+        min-height: calc(var(--vh, 1vh) * 100);
         overflow: auto;
+        padding-bottom: env(safe-area-inset-bottom, 20px);
     }
 
     .app {
         height: auto;
         min-height: 100vh;
+        min-height: 100dvh;
+        min-height: calc(var(--vh, 1vh) * 100);
         overflow: visible;
+        padding-bottom: 2rem;
     }
 
     h1 {
@@ -115,7 +121,7 @@
     .actions button,
     .input-group button,
     .input-group input[type=text],
-    .similarity-container > button {
+    .similarity-container>button {
         width: 100%;
         max-width: 100%;
     }
@@ -145,8 +151,9 @@
         padding: 1rem;
         /* height: calc(100vh - 120px); */
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
-    
+
     #task-container {
         height: auto;
     }
