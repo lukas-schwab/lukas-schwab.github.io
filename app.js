@@ -100,11 +100,8 @@ let currentCleanup = null;
 let currentTaskIndex = 0;
 let taskList = [];
 let tasksLoaded = false;
-
-// Batch Configuration
+let currentBatchCount = 0;
 const MAX_BATCHES = 4;
-let currentBatchCount = 1;
-let nextBatchPromise = null;
 
 // Cooldown functions removed as they are now in storage.js
 
@@ -230,15 +227,18 @@ async function showLandingPage() {
     // Add event listener to start button
     const startButton = document.getElementById('start-tasks-btn');
     if (startButton) {
-        startButton.addEventListener('click', () => {
+        startButton.addEventListener('click', async () => {
             if (storage.isCoolingDown()) {
                 showToast(t('messages.noMoreTasks'));
                 return;
             }
 
             if (!tasksLoaded) {
-                showToast(t('messages.loadingTasks'));
-                return;
+                const tasks = await fetchTasksFromApi();
+                taskList = tasks;
+                tasksLoaded = true;
+                currentBatchCount = tasks.length > 0 ? 1 : 0;
+                updateUIWithTasks();
             }
             if (taskList.length === 0) {
                 storage.setCooldown();
@@ -258,36 +258,8 @@ async function loadTask(index) {
     }
 
     if (index >= taskList.length) {
-        // Current batch is finished. 
-        // 1. Silent upload the current batch
-        uploadResultsToApi().then(success => {
-            if (!success) {
-                showToast(t('messages.uploadFailedToast') || 'Connection error. Progress might not be saved.');
-            }
-        });
-
-        // 2. Check if we have more batches to go
-        if (currentBatchCount < MAX_BATCHES) {
-            if (nextBatchPromise) {
-                const nextTasks = await nextBatchPromise;
-                if (nextTasks && nextTasks.length > 0) {
-                    taskList = [...taskList, ...nextTasks];
-                    currentBatchCount++;
-                    nextBatchPromise = null;
-                    // Proceed to first task of new batch
-                    loadTask(index);
-                    return;
-                }
-            }
-            // If promise wasn't ready or failed, try fetching once more
-            const nextTasks = await fetchTasksFromApi();
-            if (nextTasks && nextTasks.length > 0) {
-                taskList = [...taskList, ...nextTasks];
-                currentBatchCount++;
-                loadTask(index);
-                return;
-            }
-        }
+        // Current batch is finished.
+        // Upload and next-batch fetching happen sequentially on task completion.
 
         // All batches completed
         elements.taskContainer.innerHTML = `
@@ -324,7 +296,7 @@ async function loadTask(index) {
                 if (nextTasks && nextTasks.length > 0) {
                     taskList = nextTasks;
                     currentBatchCount = 1;
-                    nextBatchPromise = null;
+                    tasksLoaded = true;
                     loadTask(0);
                 } else {
                     storage.setCooldown();
@@ -337,12 +309,7 @@ async function loadTask(index) {
         return;
     }
 
-    // Pre-fetch the NEXT batch when the user starts the LAST task of the current batch
-    const currentBatchLastIndex = taskList.length - 1;
-    if (index === currentBatchLastIndex && currentBatchCount < MAX_BATCHES && !nextBatchPromise) {
-        console.log(`Pre-fetching batch ${currentBatchCount + 1}...`);
-        nextBatchPromise = fetchTasksFromApi();
-    }
+    // No prefetching: only fetch tasks when a user clicks a button
 
     // Hide results when entering a task
     if (elements.storageView) {
@@ -381,7 +348,28 @@ async function loadTask(index) {
 }
 
 // Listen for task completion signal from storage
-window.addEventListener('task-completed', () => {
+window.addEventListener('task-completed', async () => {
+    const isEndOfBatch = currentTaskIndex === taskList.length - 1;
+
+    if (isEndOfBatch) {
+        const uploadSuccess = await uploadResultsToApi();
+        if (!uploadSuccess) {
+            showToast(t('messages.uploadFailedToast') || 'Connection error. Progress might not be saved.');
+        }
+
+        if (currentBatchCount < MAX_BATCHES) {
+            const nextTasks = await fetchTasksFromApi();
+            if (nextTasks && nextTasks.length > 0) {
+                taskList = [...taskList, ...nextTasks];
+                currentBatchCount++;
+                tasksLoaded = true;
+            } else {
+                storage.setCooldown();
+                showToast(t('messages.noMoreTasks'));
+            }
+        }
+    }
+
     setTimeout(() => {
         currentTaskIndex++;
         loadTask(currentTaskIndex);
@@ -429,13 +417,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Start showing landing page immediately
     const landingPromise = showLandingPage();
-
-    // Fetch task sequence from API in the background
-    fetchTasksFromApi().then(tasks => {
-        taskList = tasks;
-        tasksLoaded = true;
-        updateUIWithTasks();
-    });
 
     await landingPromise;
 });
