@@ -102,6 +102,10 @@ let taskList = [];
 let tasksLoaded = false;
 let currentBatchCount = 0;
 const MAX_BATCHES = 4;
+let taskStartTime = null;
+
+// Expose taskStartTime getter globally for controllers
+window.getTaskStartTime = () => taskStartTime;
 
 // Cooldown functions removed as they are now in storage.js
 
@@ -345,6 +349,9 @@ async function loadTask(index) {
     // Initialize task controller
     currentCleanup = taskMeta.controller.init(elements.taskContainer, taskConfig);
     currentTaskIndex = index;
+    
+    // Record task start time
+    taskStartTime = Date.now();
 }
 
 // Listen for task completion signal from storage

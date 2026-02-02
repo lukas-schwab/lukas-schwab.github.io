@@ -42,7 +42,7 @@ export class GlobalStorage {
         });
     }
 
-    saveResult(taskId, taskType, data, assets = null) {
+    saveResult(taskId, taskType, data, assets = null, startTime = null) {
         const entry = {
             taskId,
             taskType,
@@ -52,6 +52,11 @@ export class GlobalStorage {
             assets,
             data
         };
+        
+        // Add time taken if start time was provided
+        if (startTime !== null) {
+            entry.timeTakenMs = Date.now() - startTime;
+        }
         this.results.push(entry);
         this.persist();
         this.notify();

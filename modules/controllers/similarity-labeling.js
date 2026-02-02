@@ -19,7 +19,7 @@ export const SimilarityLabelingController = {
 
         const handleSubmit = () => {
             const value = slider.value;
-            storage.saveResult(taskId, 'similarity_labeling', { rank: value }, data);
+            storage.saveResult(taskId, 'similarity_labeling', { rank: value }, data, window.getTaskStartTime?.());
             showToast(`Submitted: Score ${value}/5`);
 
             // Visual feedback on button

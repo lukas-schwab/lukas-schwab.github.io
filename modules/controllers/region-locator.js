@@ -148,7 +148,7 @@ export const RegionLocatorController = {
                 x: Math.round(p.x * elements.imgB.naturalWidth),
                 y: Math.round(p.y * elements.imgB.naturalHeight)
             }));
-            storage.saveResult(taskId, 'image_region_locator', { points: results }, data);
+            storage.saveResult(taskId, 'image_region_locator', { points: results }, data, window.getTaskStartTime?.());
             showToast(t('messages.submittedRegion'));
 
             // Cooldown logic
@@ -160,7 +160,7 @@ export const RegionLocatorController = {
 
         function handleNotFound() {
             if (elements.notFoundBtn.disabled) return;
-            storage.saveResult(taskId, 'image_region_locator', { notFound: true }, data);
+            storage.saveResult(taskId, 'image_region_locator', { notFound: true }, data, window.getTaskStartTime?.());
             showToast(t('messages.submittedRegionNotFound'));
 
             // Cooldown logic

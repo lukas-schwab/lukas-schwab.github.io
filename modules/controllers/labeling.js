@@ -25,7 +25,7 @@ export const LabelingController = {
             if (submitBtn.disabled) return;
             const label = input.value.trim();
             if (label) {
-                storage.saveResult(taskId, 'labeling', { label }, data);
+                storage.saveResult(taskId, 'labeling', { label }, data, window.getTaskStartTime?.());
                 showToast(`${t('labeling.submitBtn')}: "${label}"`);
 
                 // Cooldown logic

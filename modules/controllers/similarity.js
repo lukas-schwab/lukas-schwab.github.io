@@ -67,7 +67,7 @@ export const PropertyIdentifierController = {
                 return;
             }
             const results = markers.map(m => ({ x: m.pixelX, y: m.pixelY }));
-            storage.saveResult(taskId, 'property_identifier', { markers: results }, data);
+            storage.saveResult(taskId, 'property_identifier', { markers: results }, data, window.getTaskStartTime?.());
             showToast(`Submitted: ${results.length} markers`);
 
             // Cooldown logic
