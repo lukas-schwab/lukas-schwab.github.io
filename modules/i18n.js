@@ -59,7 +59,11 @@ const translations = {
             uploading: 'Uploading results...',
             uploadFailed: 'Upload failed',
             retryBtn: 'Retry Upload',
-            returnBtn: 'Return to Start'
+            returnBtn: 'Return to Start',
+            shareTitle: 'Share this study',
+            shareDescription: 'Copy the link below to share with others:',
+            copyBtn: 'Copy Link',
+            copiedBtn: 'Copied!'
         },
         // Storage View
         storage: {
@@ -141,7 +145,11 @@ const translations = {
             uploading: 'Ergebnisse werden übertragen...',
             uploadFailed: 'Übertragung fehlgeschlagen',
             retryBtn: 'Erneut versuchen',
-            returnBtn: 'Zurück zum Start'
+            returnBtn: 'Zurück zum Start',
+            shareTitle: 'Diese Studie teilen',
+            shareDescription: 'Kopiere den Link und Teile die Studie weiter:',
+            copyBtn: 'Link kopieren',
+            copiedBtn: 'Kopiert!'
         },
         // Storage View
         storage: {

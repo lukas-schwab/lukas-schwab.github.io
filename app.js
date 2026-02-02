@@ -266,11 +266,22 @@ async function loadTask(index) {
         // Upload and next-batch fetching happen sequentially on task completion.
 
         // All batches completed
+        const shareUrl = new URL(window.location.href);
+        shareUrl.searchParams.set('group', 'referral');
         elements.taskContainer.innerHTML = `
             <div style="text-align: center; padding: 4rem 2rem;">
                 <h1 data-i18n="completion.title">${t('completion.title')}</h1>
                 <p data-i18n="completion.thanks">${t('completion.thanks')}</p>
                 <button class="primary" id="more-tasks-btn" data-i18n="completion.moreTasksBtn">${t('completion.moreTasksBtn')}</button>
+                
+                <div style="margin-top: 3rem; padding: 1.5rem; border-radius: 8px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    <h3 style="margin-top: 0; margin-bottom: 0.5rem;" data-i18n="completion.shareTitle">${t('completion.shareTitle')}</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;" data-i18n="completion.shareDescription">${t('completion.shareDescription')}</p>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="text" id="share-link-input" value="${shareUrl}" readonly style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem;">
+                        <button class="primary" id="copy-link-btn" data-i18n="completion.copyBtn">${t('completion.copyBtn')}</button>
+                    </div>
+                </div>
             </div>
         `;
 
@@ -283,6 +294,28 @@ async function loadTask(index) {
             setViewportHeight();
             setTimeout(setViewportHeight, 100);
         });
+
+        // Copy link button handler
+        const copyLinkBtn = document.getElementById('copy-link-btn');
+        if (copyLinkBtn) {
+            copyLinkBtn.addEventListener('click', async () => {
+                const shareInput = document.getElementById('share-link-input');
+                try {
+                    await navigator.clipboard.writeText(shareInput.value);
+                    const originalText = copyLinkBtn.textContent;
+                    copyLinkBtn.textContent = t('completion.copiedBtn');
+                    copyLinkBtn.style.backgroundColor = '#4caf50';
+                    setTimeout(() => {
+                        copyLinkBtn.textContent = originalText;
+                        copyLinkBtn.style.backgroundColor = '';
+                    }, 2000);
+                } catch (err) {
+                    // Fallback for older browsers
+                    shareInput.select();
+                    document.execCommand('copy');
+                }
+            });
+        }
 
         const moreTasksBtn = document.getElementById('more-tasks-btn');
         if (moreTasksBtn) {
