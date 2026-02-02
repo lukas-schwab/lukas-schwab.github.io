@@ -9,7 +9,7 @@ const translations = {
             badge: 'Research Study',
             titlePart1: 'Concept Interpretability',
             titlePart2: 'Study',
-            subtitle: 'Help advance machine learning interpretability through human perception research',
+            subtitle: 'Help us advance ML interpretability by revealing how you perceive visual simuli.',
             card1Title: 'What to Expect',
             card1Text: 'Complete interactive tasks involving image analysis, region selection, labeling, and similarity comparison.',
             card2Title: 'Time Commitment',
@@ -34,10 +34,10 @@ const translations = {
         },
         // Region Locator Page
         regionLocator: {
-            title: 'Encircle image A in the schema down below.',
+            title: 'Encircle image A in the object scheme.',
             subtitle: 'Try to draw a boundary around the matching location of image A on the schema.',
             cardALabel: 'Image A (Reference)',
-            cardBLabel: 'Schema (draw here)',
+            cardBLabel: 'Scheme (draw here)',
             hintA: 'Target object to find',
             hintB: 'Click and drag to encircle',
             notFoundBtn: 'No matching location found',
@@ -90,8 +90,8 @@ const translations = {
         landing: {
             badge: 'Research Study',
             titlePart1: 'Concept Interpretability',
-            titlePart2: ' ',
-            subtitle: 'Hilf uns dabei, maschinelles Lernen besser zu verstehen – durch deine Wahrnehmung',
+            titlePart2: 'Studie',
+            subtitle: 'Hilf uns mit deiner Wahrnehmung dabei, die Interpretierbarkeit von ML-Modellen zu verbessern.',
             card1Title: 'Was dich erwartet',
             card1Text: 'Du absolvierst interaktive Aufgaben: Bilder analysieren, Bereiche auswählen, beschriften und vergleichen.',
             card2Title: 'Zeitaufwand',
@@ -116,7 +116,7 @@ const translations = {
         },
         // Region Locator Page
         regionLocator: {
-            title: 'Umkreise Bild A in dem Schema unten.',
+            title: 'Umkreise Bild A im Objekt-Schema.',
             subtitle: 'Zeichne eine Region um die entsprechende Stelle im Schema.',
             cardALabel: 'Bild A (Vorlage)',
             cardBLabel: 'Schema (Hier zeichnen)',
