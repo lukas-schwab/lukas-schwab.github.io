@@ -525,7 +525,7 @@ input[type=range]::-webkit-slider-thumb {
     flex-shrink: 0;
 }
 
-.similarity-container > button {
+.similarity-container>button {
     align-self: flex-end;
 }
 
@@ -587,30 +587,30 @@ input[type=range]::-webkit-slider-thumb {
     .app {
         padding: 0.75rem;
     }
-    
+
     header {
         margin-bottom: 0.75rem;
     }
-    
+
     h1 {
         font-size: 1.3rem;
         margin: 0 0 4px 0;
     }
-    
+
     p.lead {
         font-size: 14px;
     }
-    
+
     .locator-grid,
     .images {
         gap: 14px;
         margin-bottom: 0.75rem;
     }
-    
+
     .similarity-container {
         gap: 0.75rem;
     }
-    
+
     .slider-section {
         padding: 1.25rem;
         gap: 12px;
@@ -621,11 +621,11 @@ input[type=range]::-webkit-slider-thumb {
     .app {
         padding: 0.5rem;
     }
-    
+
     header {
         margin-bottom: 0.5rem;
     }
-    
+
     .locator-grid,
     .images {
         margin-bottom: 0.5rem;
@@ -692,7 +692,7 @@ input[type=range]::-webkit-slider-thumb {
     .actions button,
     .input-group button,
     .input-group input[type=text],
-    .similarity-container > button {
+    .similarity-container>button {
         width: 100%;
         max-width: 100%;
     }
