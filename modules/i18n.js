@@ -30,7 +30,7 @@ const translations = {
         },
         // Property Identifier Page
         propertyId: {
-            title: 'Click on each seperate thing or visual property you see.',
+            title: 'Click on each seperate thing and visual property you see.',
             subtitle: 'You can set as many markers as you like.',
             undoBtn: 'Undo Last Marker',
             submitBtn: 'Submit'
@@ -119,7 +119,7 @@ const translations = {
         },
         // Property Identifier Page
         propertyId: {
-            title: 'Klicke auf alle Dinge oder visuellen Eigenschaften, die du sehen kannst.',
+            title: 'Klicke auf alle Dinge und visuellen Eigenschaften, die du sehen kannst.',
             subtitle: 'Du kannst so oft klicken wie du möchtest.',
             undoBtn: 'Letzte Markierung rückgängig',
             submitBtn: 'Absenden'
