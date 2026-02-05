@@ -99,3 +99,16 @@ export function debounce(func, wait) {
 export function deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
+
+/**
+ * Normalize a value to percentage (0 - 100) with 4 decimal places.
+ * @param {number} value - Value to normalize
+ * @param {number} max - Maximum value (defaults to 1 for ratio inputs)
+ * @returns {number} Normalized percentage
+ */
+export function normalizeToPercent(value, max = 1) {
+    if (!Number.isFinite(value) || !Number.isFinite(max) || max === 0) return 0;
+    const ratio = value / max;
+    const clamped = Math.min(1, Math.max(0, ratio));
+    return Number((clamped * 100).toFixed(4));
+}

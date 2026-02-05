@@ -3,7 +3,7 @@
  * Handles canvas drawing and region selection logic
  */
 import { storage } from '../storage.js';
-import { showToast, applyMultiButtonCooldown } from '../utils.js';
+import { showToast, applyMultiButtonCooldown, normalizeToPercent } from '../utils.js';
 import { INTERACTION, DRAWING_STYLE } from '../constants.js';
 import { t } from '../i18n.js';
 
@@ -145,8 +145,8 @@ export const RegionLocatorController = {
                 return;
             }
             const results = state.points.map(p => ({
-                x: Math.round(p.x * elements.imgB.naturalWidth),
-                y: Math.round(p.y * elements.imgB.naturalHeight)
+                x: normalizeToPercent(p.x),
+                y: normalizeToPercent(p.y)
             }));
             storage.saveResult(taskId, 'image_region_locator', { points: results }, data, window.getTaskStartTime?.());
             showToast(t('messages.submittedRegion'));

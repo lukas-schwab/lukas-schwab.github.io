@@ -3,7 +3,7 @@
  * Handles clicking on properties in an image
  */
 import { storage } from '../storage.js';
-import { showToast, applyButtonCooldown } from '../utils.js';
+import { showToast, applyButtonCooldown, normalizeToPercent } from '../utils.js';
 import { t } from '../i18n.js';
 
 export const PropertyIdentifierController = {
@@ -35,13 +35,9 @@ export const PropertyIdentifierController = {
             // Check if click is within image bounds
             if (imgX < 0 || imgX > imgRect.width || imgY < 0 || imgY > imgRect.height) return;
 
-            // Calculate normalized position relative to the image
-            const normX = imgX / imgRect.width;
-            const normY = imgY / imgRect.height;
-
-            // Calculate pixel coordinates on the original image
-            const pixelX = Math.round(normX * img.naturalWidth);
-            const pixelY = Math.round(normY * img.naturalHeight);
+            // Calculate normalized position relative to the image (0 - 100)
+            const normalizedX = normalizeToPercent(imgX, imgRect.width);
+            const normalizedY = normalizeToPercent(imgY, imgRect.height);
 
             // Position marker relative to wrapper using wrapper coordinates
             const markerElement = document.createElement('div');
@@ -50,7 +46,7 @@ export const PropertyIdentifierController = {
             markerElement.style.top = `${clickY}px`;
             wrapper.appendChild(markerElement);
 
-            markers.push({ pixelX, pixelY, element: markerElement });
+            markers.push({ x: normalizedX, y: normalizedY, element: markerElement });
         };
 
         const handleUndo = () => {
@@ -66,7 +62,7 @@ export const PropertyIdentifierController = {
                 showToast(t('messages.clickProperty'));
                 return;
             }
-            const results = markers.map(m => ({ x: m.pixelX, y: m.pixelY }));
+            const results = markers.map(m => ({ x: m.x, y: m.y }));
             storage.saveResult(taskId, 'property_identifier', { markers: results }, data, window.getTaskStartTime?.());
             showToast(`Submitted: ${results.length} markers`);
 
