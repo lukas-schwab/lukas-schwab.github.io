@@ -99,6 +99,7 @@ const elements = {
 let currentCleanup = null;
 let currentTaskIndex = 0;
 let taskList = [];
+let userProgress = null;
 let tasksLoaded = false;
 let currentBatchCount = 0;
 const MAX_BATCHES = 4;
@@ -121,8 +122,15 @@ async function fetchTasksFromApi() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const tasks = await response.json();
-        return tasks;
+        const data = await response.json();
+
+        // Handle both old array format and new object format
+        if (data.tasks && Array.isArray(data.tasks)) {
+            userProgress = data.userProgress || null;
+            return data.tasks;
+        }
+
+        return Array.isArray(data) ? data : [];
     } catch (error) {
         console.error('Could not fetch tasks:', error);
         return [];
@@ -348,10 +356,11 @@ async function loadTask(index) {
     }
 
     const taskConfig = taskList[index];
-    const taskMeta = taskControllers[taskConfig.type];
+    const taskType = taskConfig.taskType || taskConfig.type;
+    const taskMeta = taskControllers[taskType];
 
     if (!taskMeta) {
-        console.error(`Task type ${taskConfig.type} not found`);
+        console.error(`Task type ${taskType} not found`);
         return;
     }
 
