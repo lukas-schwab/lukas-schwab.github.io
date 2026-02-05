@@ -8,47 +8,50 @@ const translations = {
         landing: {
             badge: 'Research Study',
             titlePart1: 'Concept Interpretability',
-            titlePart2: 'Study',
+            titlePart2: ' ',
             subtitle: 'Help us advance ML interpretability by revealing how you perceive visual simuli.',
             card1Title: 'What to Expect',
-            card1Text: 'Complete interactive tasks involving image analysis, region selection, labeling, and similarity comparison.',
+            card1Text: 'Complete interactive tasks involving image analysis, region selection, labeling, and visual distinguishability.',
             card2Title: 'Time Commitment',
             card2Text: 'Approximately 5-10 minutes to complete all tasks at your own pace.',
             card3Title: 'Privacy First',
             card3Text: 'All data is fully pseudonymized. Only task responses are collected—no personal information.',
-            startBtn: 'Begin Study'
+            startBtn: 'Begin Study',
+            footerContactTitle: 'Contact',
+            footerOrgTitle: 'Organization',
+            footerOrgName: 'Offenburg University of Applied Sciences'
         },
         // Labeling Page
         labeling: {
-            title: 'Find a single word that you think fits these images.',
+            title: 'Pick a single word that best describes these images.',
             subtitle: 'Please type something even if you are unsure about it.',
             placeholder: 'Enter label here...',
             submitBtn: 'Submit'
         },
         // Property Identifier Page
         propertyId: {
-            title: 'Click on all the components you can identify in this image.',
-            subtitle: 'A component can be a distinct object or a part of an object.',
+            title: 'Click on each seperate thing or visual property you see.',
+            subtitle: 'You can set as many markers as you like.',
             undoBtn: 'Undo Last Marker',
             submitBtn: 'Submit'
         },
         // Region Locator Page
         regionLocator: {
-            title: 'Encircle image A in the object scheme.',
-            subtitle: 'Try to draw a boundary around the matching location of image A on the schema.',
+            title: 'If the content of Image A were part of Image B, where would it be?',
+            subtitle: 'Encircle that area in Image B. You can redraw multiple times.',
             cardALabel: 'Image A (Reference)',
-            cardBLabel: 'Scheme (draw here)',
-            hintA: 'Target object to find',
+            cardBLabel: 'Image B (Encircle here)',
+            hintA: ' ',
             hintB: 'Click and drag to encircle',
-            notFoundBtn: 'No matching location found',
+            notFoundBtn: 'No area found',
             submitBtn: 'Submit'
         },
         // Similarity Labeling Page
         similarity: {
-            title: 'How similar are these two image groups to each other?',
-            subtitle: 'Use the slider below to rank similarity from 1 (not similar) to 5 (identical).',
-            sliderLeft: 'Not similar at all',
-            sliderRight: 'Very similar',
+            title: 'How distinguishable are these two image groups?',
+            subtitle: 'Use the slider below to rank distinguishability from 1 (Low) to 5 (High).',
+            sliderLeft: 'Low',
+            sliderRight: 'High',
             submitBtn: 'Submit'
         },
         // Completion Page
@@ -94,7 +97,7 @@ const translations = {
         landing: {
             badge: 'Research Study',
             titlePart1: 'Concept Interpretability',
-            titlePart2: 'Studie',
+            titlePart2: ' ',
             subtitle: 'Hilf uns mit deiner Wahrnehmung dabei, die Interpretierbarkeit von ML-Modellen zu verbessern.',
             card1Title: 'Was dich erwartet',
             card1Text: 'Du absolvierst interaktive Aufgaben: Bilder analysieren, Bereiche auswählen, beschriften und vergleichen.',
@@ -102,39 +105,42 @@ const translations = {
             card2Text: 'Etwa 5-10 Minuten – ganz in deinem eigenen Tempo.',
             card3Title: 'Deine Privatsphäre',
             card3Text: 'Alle Daten sind vollständig pseudonymisiert. Wir sammeln nur deine Aufgabenlösungen – keine persönlichen Infos.',
-            startBtn: 'Los geht\'s'
+            startBtn: 'Los geht\'s',
+            footerContactTitle: 'Kontakt',
+            footerOrgTitle: 'Organisation',
+            footerOrgName: 'Hochschule Offenburg'
         },
         // Labeling Page
         labeling: {
-            title: 'Finde ein einzelnes Wort, das zu diesen Bildern passt.',
-            subtitle: 'Gib gerne etwas ein, auch wenn du dir nicht ganz sicher bist.',
-            placeholder: 'Deine Bezeichnung...',
+            title: 'Finde ein einzelnes Wort, das am besten zu diesen Bildern passt.',
+            subtitle: 'Gib auch dann gerne etwas ein, wenn du dir nicht ganz sicher bist.',
+            placeholder: 'Dein Wort...',
             submitBtn: 'Absenden'
         },
         // Property Identifier Page
         propertyId: {
-            title: 'Klicke auf alle Komponenten, die du in diesem Bild erkennen kannst.',
-            subtitle: 'Eine Komponente kann ein Objekt oder ein Teil eines Objekts sein.',
+            title: 'Klicke auf alle Dinge oder visuellen Eigenschaften, die du sehen kannst.',
+            subtitle: 'Du kannst so oft klicken wie du möchtest.',
             undoBtn: 'Letzte Markierung rückgängig',
             submitBtn: 'Absenden'
         },
         // Region Locator Page
         regionLocator: {
-            title: 'Umkreise Bild A im Objekt-Schema.',
-            subtitle: 'Zeichne eine Region um die entsprechende Stelle im Schema.',
+            title: 'Wenn der Inhalt von Bild A teil von Bild B wäre, wo wäre er?',
+            subtitle: 'Umkreise die Stelle in Bild B. Du kannst auch mehrmals neu zeichen.',
             cardALabel: 'Bild A (Vorlage)',
-            cardBLabel: 'Schema (Hier zeichnen)',
-            hintA: 'Das zu findende Objekt',
+            cardBLabel: 'Bild B (Hier umkreisen)',
+            hintA: ' ',
             hintB: 'Klicken und ziehen zum Umkreisen',
-            notFoundBtn: 'Keine Zuordnung möglich',
+            notFoundBtn: 'Keine passende Stelle gefunden',
             submitBtn: 'Absenden'
         },
         // Similarity Labeling Page
         similarity: {
-            title: 'Wie ähnlich sind diese beiden Bildgruppen?',
-            subtitle: 'Nutze den Schieberegler, um die Ähnlichkeit von 1 (ganz unterschiedlich) bis 5 (sehr ähnlich) zu bewerten.',
-            sliderLeft: 'Ganz unterschiedlich',
-            sliderRight: 'Sehr Ähnlich',
+            title: 'Wie unterscheidbar sind diese beiden Bildgruppen?',
+            subtitle: 'Nutze den Schieberegler, um die Unterscheidbarkeit von 1 (Schwach) bis 5 (Stark) zu bewerten.',
+            sliderLeft: 'Schwach',
+            sliderRight: 'Stark',
             submitBtn: 'Absenden'
         },
         // Completion Page
@@ -142,6 +148,7 @@ const translations = {
             title: 'Alle Aufgaben erledigt!',
             thanks: 'Danke, dass du mitgemacht hast!',
             moreTasksBtn: 'Gib mir mehr Aufgaben!',
+            closeStudyBtn: 'Fenster schließen',
             uploading: 'Ergebnisse werden übertragen...',
             uploadFailed: 'Übertragung fehlgeschlagen',
             retryBtn: 'Erneut versuchen',

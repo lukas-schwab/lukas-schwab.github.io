@@ -134,6 +134,12 @@ p.lead {
 }
 
 /* Image Wrapping */
+.img-title {
+    text-align: center;
+    color: var(--muted);
+    font-weight: 600;
+}
+
 .imgwrap {
     flex: 1;
     display: flex;

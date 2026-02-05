@@ -1,7 +1,7 @@
 import { storage } from './modules/storage.js';
 import { RegionLocatorController } from './modules/controllers/region-locator.js';
 import { LabelingController } from './modules/controllers/labeling.js';
-import { PropertyIdentifierController } from './modules/controllers/similarity.js';
+import { PropertyIdentifierController } from './modules/controllers/property-identifier.js';
 import { SimilarityLabelingController } from './modules/controllers/similarity-labeling.js';
 import { loadPageHTML } from './modules/utils.js';
 import { applyTranslations, t, getUserLanguage, setUserLanguage } from './modules/i18n.js';
@@ -272,7 +272,7 @@ async function loadTask(index) {
             <div style="text-align: center; padding: 4rem 2rem;">
                 <h1 data-i18n="completion.title">${t('completion.title')}</h1>
                 <p data-i18n="completion.thanks">${t('completion.thanks')}</p>
-                <button class="primary" id="more-tasks-btn" data-i18n="completion.moreTasksBtn">${t('completion.moreTasksBtn')}</button>
+                <button class="primary" id="more-tasks-btn" data-i18n="completion.moreTasksBtn" style="display: none !important;">${t('completion.moreTasksBtn')}</button>
                 
                 <div style="margin-top: 3rem; padding: 1.5rem; border-radius: 8px; max-width: 500px; margin-left: auto; margin-right: auto;">
                     <h3 style="margin-top: 0; margin-bottom: 0.5rem;" data-i18n="completion.shareTitle">${t('completion.shareTitle')}</h3>
@@ -283,6 +283,19 @@ async function loadTask(index) {
                     </div>
                 </div>
             </div>
+            <footer class="landing-footer">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h4 data-i18n="landing.footerContactTitle">${t('landing.footerContactTitle')}</h4>
+                        <a href="mailto:lschwab@stud.hs-offenburg.de" class="footer-link">lschwab@stud.hs-offenburg.de</a>
+                    </div>
+                    <div class="footer-divider"></div>
+                    <div class="footer-section">
+                        <h4 data-i18n="landing.footerOrgTitle">${t('landing.footerOrgTitle')}</h4>
+                        <p data-i18n="landing.footerOrgName">${t('landing.footerOrgName')}</p>
+                    </div>
+                </div>
+            </footer>
         `;
 
         // Apply translations to the newly added content
@@ -343,6 +356,7 @@ async function loadTask(index) {
                 }
             });
         }
+
         return;
     }
 

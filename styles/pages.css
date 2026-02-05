@@ -562,3 +562,63 @@ pre {
 .landing-start-btn:hover .btn-arrow {
     transform: translateX(4px);
 }
+
+/* Landing Page Footer */
+.landing-footer {
+    width: 100%;
+    padding: 2rem 1rem;
+    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    margin-top: 2rem;
+}
+
+.footer-content {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.footer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.footer-section h4 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.footer-section p {
+    font-size: 1rem;
+    color: var(--text);
+    margin: 0;
+    font-weight: 500;
+}
+
+.footer-link {
+    font-size: 1rem;
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.footer-link:hover {
+    color: #a78bfa;
+}
+
+.footer-divider {
+    width: 1px;
+    height: 2rem;
+    background: var(--border);
+}

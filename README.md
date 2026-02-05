@@ -26,7 +26,7 @@ lukas-schwab.github.io/
 │   ├── controllers/                     # Task-specific controllers (NEW)
 │   │   ├── region-locator.js            # Region drawing logic
 │   │   ├── labeling.js                  # Label input logic
-│   │   ├── similarity.js                # Property marking logic
+│   │   ├── property-identifier.js       # Property marking logic
 │   │   └── similarity-labeling.js       # Slider rating logic
 │   ├── region_locator.js                # (DEPRECATED - kept for reference)
 │   ├── labeling.js                      # (DEPRECATED - kept for reference)
@@ -266,7 +266,7 @@ showToast('Submitted: Region');
 Old modules (in `modules/`) are kept for reference but superseded:
 - `region_locator.js` → `controllers/region-locator.js`
 - `labeling.js` → `controllers/labeling.js`
-- `property_identifier.js` → `controllers/similarity.js`
+- `property_identifier.js` → `controllers/property-identifier.js`
 - `similarity.js` → `controllers/similarity-labeling.js`
 
 Old styles are consolidated:
