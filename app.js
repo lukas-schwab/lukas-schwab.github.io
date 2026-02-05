@@ -101,8 +101,6 @@ let currentTaskIndex = 0;
 let taskList = [];
 let userProgress = null;
 let tasksLoaded = false;
-let currentBatchCount = 0;
-const MAX_BATCHES = 4;
 let taskStartTime = null;
 
 // Expose taskStartTime getter globally for controllers
@@ -249,7 +247,6 @@ async function showLandingPage() {
                 const tasks = await fetchTasksFromApi();
                 taskList = tasks;
                 tasksLoaded = true;
-                currentBatchCount = tasks.length > 0 ? 1 : 0;
                 updateUIWithTasks();
             }
             if (taskList.length === 0) {
@@ -320,6 +317,11 @@ async function loadTask(index) {
 
         const moreTasksBtn = document.getElementById('more-tasks-btn');
         if (moreTasksBtn) {
+            // // Show the "More tasks" button only if backend says we're not finished
+            // if (userProgress && !userProgress.finished) {
+            //     moreTasksBtn.style.setProperty('display', 'inline-block', 'important');
+            // }
+
             moreTasksBtn.addEventListener('click', async () => {
                 if (storage.isCoolingDown()) {
                     showToast(t('messages.noMoreTasks'));
@@ -333,7 +335,6 @@ async function loadTask(index) {
                 const nextTasks = await fetchTasksFromApi();
                 if (nextTasks && nextTasks.length > 0) {
                     taskList = nextTasks;
-                    currentBatchCount = 1;
                     tasksLoaded = true;
                     loadTask(0);
                 } else {
@@ -400,11 +401,10 @@ window.addEventListener('task-completed', async () => {
             showToast(t('messages.uploadFailedToast') || 'Connection error. Progress might not be saved.');
         }
 
-        if (currentBatchCount < MAX_BATCHES) {
+        if (!userProgress || !userProgress.finished) {
             const nextTasks = await fetchTasksFromApi();
             if (nextTasks && nextTasks.length > 0) {
                 taskList = [...taskList, ...nextTasks];
-                currentBatchCount++;
                 tasksLoaded = true;
             } else {
                 storage.setCooldown();
