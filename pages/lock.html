@@ -1,0 +1,149 @@
+<div class="lock-screen">
+    <div class="lock-card card">
+        <h1>Protected Access</h1>
+        <p>Please enter the access code to continue.</p>
+        <div class="input-group">
+            <input id="password-input" placeholder="Enter code..." autofocus autocomplete="off">
+            <button id="unlock-btn" class="primary">Unlock</button>
+        </div>
+        <div id="lock-error" class="error-message" style="display: none;">Incorrect code. Please
+            try again.</div>
+    </div>
+</div>
+
+<style>
+    .lock-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        height: calc(var(--vh, 1vh) * 100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg);
+        background-image: radial-gradient(circle at top right, rgba(124, 58, 237, 0.1), transparent),
+            radial-gradient(circle at bottom left, rgba(124, 58, 237, 0.05), transparent);
+        z-index: 9999;
+    }
+
+    .lock-card {
+        width: 90%;
+        max-width: 440px;
+        padding: 3rem 2.5rem;
+        text-align: center;
+        background: var(--card);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border-radius: 24px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .lock-card h1 {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        color: var(--text);
+        font-weight: 700;
+        letter-spacing: -0.025em;
+    }
+
+    .lock-card p {
+        color: var(--muted);
+        margin-bottom: 2.5rem;
+        line-height: 1.5;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    #password-input {
+        padding: 1.1rem;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text);
+        font-size: 1.1rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #password-input:focus {
+        outline: none;
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.07);
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+    }
+
+    #unlock-btn {
+        padding: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+        height: auto;
+        font-size: 1.1rem;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    #unlock-btn:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    }
+
+    #unlock-btn:active {
+        transform: translateY(0);
+    }
+
+    .error-message {
+        margin-top: 1.25rem;
+        color: #ef4444;
+        font-size: 0.95rem;
+        font-weight: 500;
+        animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    @keyframes shake {
+
+        10%,
+        90% {
+            transform: translate3d(-1px, 0, 0);
+        }
+
+        20%,
+        80% {
+            transform: translate3d(2px, 0, 0);
+        }
+
+        30%,
+        50%,
+        70% {
+            transform: translate3d(-4px, 0, 0);
+        }
+
+        40%,
+        60% {
+            transform: translate3d(4px, 0, 0);
+        }
+    }
+</style>

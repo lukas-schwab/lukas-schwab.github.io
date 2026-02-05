@@ -446,6 +446,51 @@ storage.subscribe((results) => {
     elements.resultsDisplay.textContent = JSON.stringify(results, null, 2);
 });
 
+async function showLockScreen() {
+    const lockHTML = await loadPageHTML('lock');
+    elements.taskContainer.innerHTML = lockHTML;
+    applyTranslations(elements.taskContainer);
+
+    // Reset and recalculate viewport height for lock screen
+    resetViewportHeight();
+    requestAnimationFrame(() => {
+        setViewportHeight();
+        setTimeout(setViewportHeight, 100);
+    });
+
+    const passwordInput = document.getElementById('password-input');
+    const unlockBtn = document.getElementById('unlock-btn');
+    const lockError = document.getElementById('lock-error');
+
+    const attemptUnlock = () => {
+        if (passwordInput.value === 'unlockmenow') {
+            sessionStorage.setItem('isUnlocked', 'true');
+            showLandingPage();
+        } else {
+            lockError.style.display = 'block';
+            passwordInput.value = '';
+            passwordInput.focus();
+
+            // Re-hide error after some time or on next input
+            setTimeout(() => {
+                lockError.style.display = 'none';
+            }, 3000);
+        }
+    };
+
+    if (unlockBtn) {
+        unlockBtn.addEventListener('click', attemptUnlock);
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                attemptUnlock();
+            }
+        });
+    }
+}
+
 // Initial load
 document.addEventListener('DOMContentLoaded', async () => {
     // Set HTML lang attribute based on user's browser language
@@ -458,8 +503,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     storage.getUserUuid();
     window.history.pushState({}, document.title, "/");
 
-    // Start showing landing page immediately
-    const landingPromise = showLandingPage();
+    // Check if site is already unlocked for this session
+    const isUnlocked = sessionStorage.getItem('isUnlocked') === 'true';
 
-    await landingPromise;
+    if (isUnlocked) {
+        await showLandingPage();
+    } else {
+        await showLockScreen();
+    }
 });
