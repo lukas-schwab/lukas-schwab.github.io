@@ -23,7 +23,7 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'Pick a single word that best describes these images.',
+            title: 'You see details of images of class [class]. Label the common detail.',
             subtitle: 'Please type something even if you are unsure about it.',
             placeholder: 'Enter label here...',
             submitBtn: 'Submit'
@@ -43,15 +43,16 @@ const translations = {
             cardBLabel: 'Image B (Encircle here)',
             hintA: ' ',
             hintB: 'Click and drag to encircle',
+            infoTooltip: 'If you can think of multiple locations, please encircle the most likely one, or just any matching location.',
             notFoundBtn: 'No area found',
             submitBtn: 'Submit'
         },
         // Similarity Labeling Page
         similarity: {
             title: 'How distinguishable are these two image groups?',
-            subtitle: 'Use the slider below to rank distinguishability from 1 (Low) to 5 (High).',
-            sliderLeft: 'Low',
-            sliderRight: 'High',
+            subtitle: 'Use the slider below to rank distinguishability from 1 (Easy) to 5 (Hard).',
+            sliderLeft: 'Easy',
+            sliderRight: 'Hard',
             submitBtn: 'Submit'
         },
         // Completion Page
@@ -112,7 +113,7 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'Finde ein einzelnes Wort, das am besten zu diesen Bildern passt.',
+            title: 'Du siehst Bilder der Kategorie [class]. Find ein Wort oder eine Phrase, die am besten das gleiche Detail in den Bildern beschreibt.',
             subtitle: 'Gib auch dann gerne etwas ein, wenn du dir nicht ganz sicher bist.',
             placeholder: 'Dein Wort...',
             submitBtn: 'Absenden'
@@ -132,15 +133,16 @@ const translations = {
             cardBLabel: 'Bild B (Hier umkreisen)',
             hintA: ' ',
             hintB: 'Klicken und ziehen zum Umkreisen',
+            infoTooltip: 'Wenn Dir mehrere Orte einfallen, kreise bitte den wahrscheinlichsten oder einen beliebigen passenden Ort ein.',
             notFoundBtn: 'Keine passende Stelle gefunden',
             submitBtn: 'Absenden'
         },
         // Similarity Labeling Page
         similarity: {
             title: 'Wie unterscheidbar sind diese beiden Bildgruppen?',
-            subtitle: 'Nutze den Schieberegler, um die Unterscheidbarkeit von 1 (Schwach) bis 5 (Stark) zu bewerten.',
-            sliderLeft: 'Schwach',
-            sliderRight: 'Stark',
+            subtitle: 'Nutze den Schieberegler, um die Unterscheidbarkeit von 1 (Einfach) bis 5 (Schwer) zu bewerten.',
+            sliderLeft: 'Einfach',
+            sliderRight: 'Schwer',
             submitBtn: 'Absenden'
         },
         // Completion Page

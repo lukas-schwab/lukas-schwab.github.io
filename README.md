@@ -8,13 +8,13 @@ A modern, maintainable single-page application for conducting human perception r
 lukas-schwab.github.io/
 ├── index.html                           # Main entry point
 ├── app.js                               # Application controller & router
-├── styles/                              # Organized stylesheets (NEW)
+├── styles/                              # Organized stylesheets
 │   ├── main.css                         # Entry point with imports
 │   ├── components.css                   # UI components (buttons, inputs, cards)
 │   ├── pages.css                        # Page layouts & page-specific styles
 │   ├── layout.css                       # Grid and structure
 │   └── responsive.css                   # Media queries & responsive design
-├── pages/                               # Real HTML page templates (NEW)
+├── pages/                               # Real HTML page templates
 │   ├── landing.html                     # Study introduction
 │   ├── region-locator.html              # Draw boundaries task
 │   ├── labeling.html                    # Image labeling task
@@ -22,21 +22,16 @@ lukas-schwab.github.io/
 │   └── similarity-labeling.html         # Rate similarity task
 ├── modules/                             # Core modules
 │   ├── storage.js                       # Data persistence & local storage
-│   ├── utils.js                         # Shared utilities (NEW)
-│   ├── controllers/                     # Task-specific controllers (NEW)
+│   ├── utils.js                         # Shared utilities
+│   ├── controllers/                     # Task-specific controllers
 │   │   ├── region-locator.js            # Region drawing logic
 │   │   ├── labeling.js                  # Label input logic
 │   │   ├── property-identifier.js       # Property marking logic
 │   │   └── similarity-labeling.js       # Slider rating logic
-│   ├── region_locator.js                # (DEPRECATED - kept for reference)
-│   ├── labeling.js                      # (DEPRECATED - kept for reference)
-│   ├── property_identifier.js           # (DEPRECATED - kept for reference)
-│   └── similarity.js                    # (DEPRECATED - kept for reference)
 ├── assets/                              # Images and media
 │   ├── concepts/
 │   ├── patches/
 │   └── targets/
-└── old/                                 # Legacy files (archived)
 ```
 
 ## 🎯 Key Improvements

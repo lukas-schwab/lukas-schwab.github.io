@@ -2,7 +2,21 @@
     <div class="header-content">
         <div>
             <h1 data-i18n="regionLocator.title">Encircle image A in image B.</h1>
-            <p class="lead" data-i18n="regionLocator.subtitle">Draw a boundary around the matching location on image B.</p>
+            <div class="lead-with-tooltip">
+                <p class="lead" data-i18n="regionLocator.subtitle">Draw a boundary around the matching location on image
+                    B.</p>
+                <div class="tooltip-wrapper" tabindex="0">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <div class="tooltip-content" data-i18n="regionLocator.infoTooltip">
+                        You can redraw the area as many times as you like. Only the last drawing will be submitted.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </header>
@@ -31,7 +45,8 @@
 </section>
 
 <div class="actions">
-    <button id="notFoundBtn" class="secondary" data-i18n="regionLocator.notFoundBtn">I do not see where image A is</button>
+    <button id="notFoundBtn" class="secondary" data-i18n="regionLocator.notFoundBtn">I do not see where image A
+        is</button>
     <button id="submitBtn" class="primary" data-i18n="regionLocator.submitBtn">Submit</button>
 </div>
 
