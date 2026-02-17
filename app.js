@@ -85,24 +85,32 @@ const DUMMY_TASKS = {
     labeling: {
         type: 'labeling',
         isDummy: true,
-        img: 'assets/concepts/airliner/reference.jpg',
+        assets: {
+            img: 'assets/dummy/label.png',
+        }
     },
     image_region_locator: {
         type: 'image_region_locator',
         isDummy: true,
-        imgA: 'assets/concepts/airliner/reference.jpg',
-        imgB: 'assets/concepts/airliner/target.jpg'
+        assets: {
+            imgA: 'assets/dummy/reference.png',
+            imgB: 'assets/dummy/target.png'
+        }
     },
     property_identifier: {
         type: 'property_identifier',
         isDummy: true,
-        img: 'assets/concepts/airliner/reference.jpg',
+        assets: {
+            img: 'assets/dummy/identify.png',
+        }
     },
     similarity_labeling: {
         type: 'similarity_labeling',
         isDummy: true,
-        imgA: 'assets/concepts/airliner/reference.jpg',
-        imgB: 'assets/concepts/airliner/reference.jpg',
+        assets: {
+            imgA: 'assets/dummy/left.png',
+            imgB: 'assets/dummy/right.png',
+        }
     }
 };
 

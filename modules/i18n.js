@@ -27,6 +27,7 @@ const translations = {
         labeling: {
             title: 'You see details of images of class [class]. Label the common detail.',
             subtitle: 'Please type something even if you are unsure about it.',
+            defaultClassName: "fish",
             placeholder: 'Enter label here...',
             submitBtn: 'Submit'
         },
@@ -119,6 +120,7 @@ const translations = {
         labeling: {
             title: 'Du kannst Details von Bildern der Klasse [class] sehen. Beschrifte das gemeinsame Detail.',
             subtitle: 'Bitte gebe auch dann etwas ein, wenn Du Dir unsicher bist.',
+            defaultClassName: "Fisch",
             placeholder: 'Dein Wort...',
             submitBtn: 'Absenden'
         },
