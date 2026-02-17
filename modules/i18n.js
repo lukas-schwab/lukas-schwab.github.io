@@ -117,15 +117,15 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'Du siehst Bilder der Kategorie [class]. Find ein Wort oder eine Phrase, die am besten das gleiche Detail in den Bildern beschreibt.',
-            subtitle: 'Gib auch dann gerne etwas ein, wenn du dir nicht ganz sicher bist.',
+            title: 'Du kannst Details von Bildern der Klasse [class] sehen. Beschrifte das gemeinsame Detail.',
+            subtitle: 'Bitte gebe auch dann etwas ein, wenn Du Dir unsicher bist.',
             placeholder: 'Dein Wort...',
             submitBtn: 'Absenden'
         },
         // Property Identifier Page
         propertyId: {
-            title: 'Klicke auf alle Dinge und visuellen Eigenschaften, die du sehen kannst.',
-            subtitle: 'Du kannst so oft klicken wie du möchtest.',
+            title: 'Klicke auf alle Dinge und visuellen Eigenschaften, die du sehen kannst.', 
+            subtitle: 'Du kannst so viele Marker setzen wie Du möchtest.',
             undoBtn: 'Letzte Markierung rückgängig',
             submitBtn: 'Absenden'
         },
