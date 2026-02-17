@@ -42,7 +42,7 @@ export class GlobalStorage {
         });
     }
 
-    saveResult(taskId, taskType, data, assets = null, startTime = null) {
+    saveResult(taskId, taskType, data, assets = null, startTime = null, isDummy = false) {
         const entry = {
             taskId,
             taskType,
@@ -50,7 +50,8 @@ export class GlobalStorage {
             groupIdentifier: this.getGroupIdentifier(),
             userUuid: this.getUserUuid(),
             assets,
-            data
+            data,
+            isDummy
         };
         
         // Add time taken if start time was provided

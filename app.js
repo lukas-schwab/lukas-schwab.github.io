@@ -80,6 +80,32 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+// Dummy tasks - one for each task type (will prepend one to each batch)
+const DUMMY_TASKS = {
+    labeling: {
+        type: 'labeling',
+        isDummy: true,
+        img: 'assets/concepts/airliner/reference.jpg',
+    },
+    image_region_locator: {
+        type: 'image_region_locator',
+        isDummy: true,
+        imgA: 'assets/concepts/airliner/reference.jpg',
+        imgB: 'assets/concepts/airliner/target.jpg'
+    },
+    property_identifier: {
+        type: 'property_identifier',
+        isDummy: true,
+        img: 'assets/concepts/airliner/reference.jpg',
+    },
+    similarity_labeling: {
+        type: 'similarity_labeling',
+        isDummy: true,
+        imgA: 'assets/concepts/airliner/reference.jpg',
+        imgB: 'assets/concepts/airliner/reference.jpg',
+    }
+};
+
 const taskControllers = {
     image_region_locator: { controller: RegionLocatorController, page: 'region-locator' },
     labeling: { controller: LabelingController, page: 'labeling' },
@@ -102,6 +128,8 @@ let taskList = [];
 let userProgress = null;
 let tasksLoaded = false;
 let taskStartTime = null;
+let batchCount = 0; // Track which batch we're on (0-3)
+let nextBatchPromise = null; // Promise for fetching the next batch
 
 // Expose taskStartTime getter globally for controllers
 window.getTaskStartTime = () => taskStartTime;
@@ -123,21 +151,61 @@ async function fetchTasksFromApi() {
         const data = await response.json();
 
         // Handle both old array format and new object format
+        let tasks = [];
         if (data.tasks && Array.isArray(data.tasks)) {
             userProgress = data.userProgress || null;
-            return data.tasks;
+            tasks = data.tasks;
+        } else if (data.fullSequence) {
+            // New format with metadata
+            userProgress = data;
+            tasks = data.tasks || [];
+        } else {
+            tasks = Array.isArray(data) ? data : [];
         }
 
-        return Array.isArray(data) ? data : [];
+        return tasks;
     } catch (error) {
         console.error('Could not fetch tasks:', error);
         return [];
     }
 }
 
+// Fetch the next batch asynchronously and return a promise
+function startFetchingNextBatch(afterUploadPromise = null) {
+    if (nextBatchPromise) return nextBatchPromise; // Already fetching
+    // Allow up to 4 batches; block only after 4 have been started
+    if (batchCount >= 5) return Promise.resolve(null);
+
+    const runFetch = async () => {
+        // Ensure previous batch upload (if provided) finishes before fetching new tasks
+        if (afterUploadPromise) {
+            try {
+                await afterUploadPromise;
+            } catch (err) {
+                console.error('Upload failed, skipping fetch:', err);
+                return null;
+            }
+        }
+        return fetchTasksFromApi();
+    };
+
+    nextBatchPromise = runFetch();
+    return nextBatchPromise;
+}
+
+// Get the fetched batch and clear the promise
+async function getNextBatch() {
+    if (!nextBatchPromise) return null;
+    const tasks = await nextBatchPromise;
+    nextBatchPromise = null;
+    return tasks;
+}
+
 // Function to upload results to the API
 async function uploadResultsToApi() {
-    const results = storage.getResults();
+    const allResults = storage.getResults();
+    // Filter out dummy tasks before uploading
+    const results = allResults.filter(result => !result.isDummy);
     if (results.length === 0) return true;
 
     const url = 'https://europe-west3-concept-interpretability-efded.cloudfunctions.net/submit_results_batch';
@@ -245,8 +313,16 @@ async function showLandingPage() {
 
             if (!tasksLoaded) {
                 const tasks = await fetchTasksFromApi();
+                // Prepend dummy for first batch
+                if (tasks.length > 0 && userProgress && userProgress.taskType) {
+                    const dummyTask = DUMMY_TASKS[userProgress.taskType];
+                    if (dummyTask) {
+                        tasks.unshift(dummyTask);
+                    }
+                }
                 taskList = tasks;
                 tasksLoaded = true;
+                batchCount = 1;
                 updateUIWithTasks();
             }
             if (taskList.length === 0) {
@@ -334,9 +410,9 @@ async function loadTask(index) {
 
                 const nextTasks = await fetchTasksFromApi();
                 if (nextTasks && nextTasks.length > 0) {
-                    taskList = nextTasks;
+                    taskList = [...taskList, ...nextTasks];
                     tasksLoaded = true;
-                    loadTask(0);
+                    loadTask(currentTaskIndex + 1);
                 } else {
                     storage.setCooldown();
                     showToast(t('messages.noMoreTasks'));
@@ -393,26 +469,71 @@ async function loadTask(index) {
 
 // Listen for task completion signal from storage
 window.addEventListener('task-completed', async () => {
-    const isEndOfBatch = currentTaskIndex === taskList.length - 1;
+    const currentTask = taskList[currentTaskIndex];
+    const isDummyTask = Boolean(currentTask?.isDummy);
+    const hasPendingBatchFetch = Boolean(nextBatchPromise);
 
-    if (isEndOfBatch) {
-        const uploadSuccess = await uploadResultsToApi();
-        if (!uploadSuccess) {
-            showToast(t('messages.uploadFailedToast') || 'Connection error. Progress might not be saved.');
-        }
-
-        if (!userProgress || !userProgress.finished) {
-            const nextTasks = await fetchTasksFromApi();
-            if (nextTasks && nextTasks.length > 0) {
-                taskList = [...taskList, ...nextTasks];
+    // If we're on the dummy while the next batch is still being fetched, wait for it
+    if (isDummyTask && hasPendingBatchFetch) {
+        try {
+            const nextBatch = await getNextBatch();
+            if (nextBatch && nextBatch.length > 0) {
+                taskList.push(...nextBatch);
                 tasksLoaded = true;
             } else {
                 storage.setCooldown();
                 showToast(t('messages.noMoreTasks'));
             }
+        } catch (err) {
+            console.error('Failed to fetch next batch:', err);
+            showToast(t('messages.noMoreTasks'));
         }
+
+        // Move past the dummy to the first task of the fetched batch (or completion screen if none)
+        setTimeout(() => {
+            currentTaskIndex++;
+            loadTask(currentTaskIndex);
+        }, 250);
+        return;
     }
 
+    const isEndOfBatch = currentTaskIndex === taskList.length - 1;
+
+    if (isEndOfBatch) {
+        // Immediately increment batch and append next dummy (NO WAITING)
+        batchCount++;
+        if (userProgress && userProgress.nextTaskType && batchCount <= 4) {
+            const nextDummyTask = DUMMY_TASKS[userProgress.nextTaskType];
+            if (nextDummyTask) {
+                taskList.push(nextDummyTask);
+            }
+        }
+
+        // Start upload, then fetch next batch after upload completes (to preserve order server-side)
+        if (!userProgress || !userProgress.finished) {
+            const uploadPromise = uploadResultsToApi().catch(err => {
+                console.error('Upload failed:', err);
+                showToast(t('messages.uploadFailedToast') || 'Connection error. Progress might not be saved.');
+                throw err;
+            });
+
+            if (batchCount < 5) {
+                startFetchingNextBatch(uploadPromise).catch(err => {
+                    console.error('Failed to fetch next batch:', err);
+                });
+            }
+        }
+
+        // Load dummy (or completion if no dummy) immediately
+        setTimeout(() => {
+            currentTaskIndex++;
+            loadTask(currentTaskIndex);
+        }, 250);
+
+        return; // Don't execute the setTimeout below (we already scheduled loadTask above)
+    }
+
+    // Regular task completion (not end of batch) - just load next task
     setTimeout(() => {
         currentTaskIndex++;
         loadTask(currentTaskIndex);
