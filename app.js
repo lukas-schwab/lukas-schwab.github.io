@@ -94,7 +94,7 @@ const DUMMY_TASKS = {
         isDummy: true,
         assets: {
             imgA: 'assets/dummy/reference.png',
-            imgB: 'assets/dummy/target.png'
+            imgB: 'assets/dummy/scheme.png'
         }
     },
     property_identifier: {
