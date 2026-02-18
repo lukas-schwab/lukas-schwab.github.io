@@ -8,13 +8,14 @@
     gap: 8px;
     align-self: flex-start;
     z-index: 10;
+    margin-bottom: -1em;
+    margin-left: 1em;
 }
 
 /* Show language selector only on landing page */
 #task-container:has(.landing-page)~.language-selector,
 .main-content:has(.landing-page) .language-selector {
     display: flex;
-    margin-bottom: -1em;
 }
 
 .lang-label {

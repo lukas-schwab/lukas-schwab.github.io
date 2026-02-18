@@ -314,12 +314,13 @@ async function showLandingPage() {
     const startButton = document.getElementById('start-tasks-btn');
     if (startButton) {
         startButton.addEventListener('click', async () => {
+            let loadingTimeout;
             if (storage.isCoolingDown()) {
                 showToast(t('messages.noMoreTasks'));
                 return;
             } else {
                 // Set loading indicator after 0.7 seconds
-                const loadingTimeout = setTimeout(() => {
+                loadingTimeout = setTimeout(() => {
                     const buttonText = startButton.querySelector('span:not(.btn-arrow)');
                     if (buttonText) {
                         buttonText.textContent = t('landing.loadingText');

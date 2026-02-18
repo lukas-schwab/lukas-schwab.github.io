@@ -64,7 +64,7 @@
 
 .main-content {
     flex: 1;
-    padding: 1rem;
+    padding-top: 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -569,7 +569,7 @@ pre {
     padding: 2rem 1rem;
     border-top: 1px solid var(--border);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-    margin-top: 2rem;
+    margin-top: auto;
 }
 
 .footer-content {
@@ -621,4 +621,9 @@ pre {
     width: 1px;
     height: 2rem;
     background: var(--border);
+}
+
+/* Hide footer for non-landing pages */
+.main-content:not(:has(.landing-page)):not(:has(.completion-page)) .landing-footer {
+    display: none;
 }
