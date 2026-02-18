@@ -319,6 +319,14 @@ async function showLandingPage() {
                 return;
             }
 
+            // Set loading indicator after 0.5 seconds
+            const loadingTimeout = setTimeout(() => {
+                const buttonText = startButton.querySelector('span:not(.btn-arrow)');
+                if (buttonText) {
+                    buttonText.textContent = t('landing.loadingText');
+                }
+            }, 500);
+
             if (!tasksLoaded) {
                 const tasks = await fetchTasksFromApi();
                 // Prepend dummy for first batch
@@ -339,6 +347,7 @@ async function showLandingPage() {
                 return;
             }
             storage.markVisited();
+            clearTimeout(loadingTimeout);
             loadTask(0);
         });
     }

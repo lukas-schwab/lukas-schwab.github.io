@@ -19,6 +19,7 @@ const translations = {
             card3Title: 'Privacy First',
             card3Text: 'All data is fully pseudonymized. Only task responses are collected—no personal information.',
             startBtn: 'Begin Study',
+            loadingText: 'Almost there...',
             footerContactTitle: 'Contact',
             footerOrgTitle: 'Organization',
             footerOrgName: 'Offenburg University of Applied Sciences'
@@ -112,6 +113,7 @@ const translations = {
             card3Title: 'Deine Privatsphäre',
             card3Text: 'Alle Daten sind vollständig pseudonymisiert. Wir sammeln nur deine Aufgabenlösungen – keine persönlichen Infos.',
             startBtn: 'Los geht\'s',
+            loadingText: 'Wird vorbereitet...',
             footerContactTitle: 'Kontakt',
             footerOrgTitle: 'Organisation',
             footerOrgName: 'Hochschule Offenburg'
