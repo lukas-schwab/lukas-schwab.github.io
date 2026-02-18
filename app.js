@@ -62,7 +62,11 @@ if (window.visualViewport) {
 }
 
 // Android-specific: Recalculate on touch (when user starts scrolling)
-document.addEventListener('touchstart', () => {
+document.addEventListener('touchstart', (event) => {
+    const target = event.target;
+    if (target && target.closest && target.closest('.landing-start-btn')) {
+        return;
+    }
     requestAnimationFrame(setViewportHeight);
 }, { passive: true, once: false });
 
