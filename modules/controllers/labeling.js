@@ -64,6 +64,9 @@ export const LabelingController = {
             if (e.key === 'Enter') handleSubmit();
         };
 
+        // Auto-focus the input
+        input.focus();
+
         input.addEventListener('input', handleInput);
         submitBtn.addEventListener('click', handleSubmit);
         input.addEventListener('keypress', handleKey);

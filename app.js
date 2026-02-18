@@ -317,15 +317,16 @@ async function showLandingPage() {
             if (storage.isCoolingDown()) {
                 showToast(t('messages.noMoreTasks'));
                 return;
+            } else {
+                // Set loading indicator after 0.7 seconds
+                const loadingTimeout = setTimeout(() => {
+                    const buttonText = startButton.querySelector('span:not(.btn-arrow)');
+                    if (buttonText) {
+                        buttonText.textContent = t('landing.loadingText');
+                    }
+                }, 700);
             }
 
-            // Set loading indicator after 0.5 seconds
-            const loadingTimeout = setTimeout(() => {
-                const buttonText = startButton.querySelector('span:not(.btn-arrow)');
-                if (buttonText) {
-                    buttonText.textContent = t('landing.loadingText');
-                }
-            }, 500);
 
             if (!tasksLoaded) {
                 const tasks = await fetchTasksFromApi();
@@ -343,6 +344,10 @@ async function showLandingPage() {
             }
             if (taskList.length === 0) {
                 storage.setCooldown();
+                const buttonText = startButton.querySelector('span:not(.btn-arrow)');
+                if (buttonText) {
+                    buttonText.textContent = t('landing.startBtn');
+                }
                 showToast(t('messages.noMoreTasks'));
                 return;
             }
