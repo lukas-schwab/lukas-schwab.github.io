@@ -240,7 +240,7 @@ async function uploadResultsToApi() {
     }
 }
 
-function showToast(message) {
+function showToast(message, cooldown=COOLDOWN.TOAST_DURATION) {
     if (!elements.toastContainer) return;
 
     const toast = document.createElement('div');
@@ -251,7 +251,7 @@ function showToast(message) {
     setTimeout(() => {
         toast.classList.add('fade-out');
         toast.addEventListener('animationend', () => toast.remove());
-    }, COOLDOWN.TOAST_DURATION);
+    }, cooldown);
 }
 
 // Helper to update UI elements that depend on the task list
@@ -438,7 +438,7 @@ async function loadTask(index) {
                     loadTask(currentTaskIndex + 1);
                 } else {
                     storage.setCooldown();
-                    showToast(t('messages.noMoreTasks'));
+                    showToast(t('messages.noMoreTasks'), 6000);
                     moreTasksBtn.disabled = false;
                     moreTasksBtn.textContent = originalText;
                 }
@@ -505,11 +505,11 @@ window.addEventListener('task-completed', async () => {
                 tasksLoaded = true;
             } else {
                 storage.setCooldown();
-                showToast(t('messages.noMoreTasks'));
+                showToast(t('messages.noMoreTasks'), 6000);
             }
         } catch (err) {
             console.error('Failed to fetch next batch:', err);
-            showToast(t('messages.noMoreTasks'));
+            showToast(t('messages.noMoreTasks'), 6000);
         }
 
         // Move past the dummy to the first task of the fetched batch (or completion screen if none)

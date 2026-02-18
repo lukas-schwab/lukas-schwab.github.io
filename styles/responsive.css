@@ -112,6 +112,10 @@
         font-size: 1.1rem;
     }
 
+    .language-selector {
+        margin-bottom: 1rem;
+    }
+
     .actions {
         width: 100%;
         justify-content: center;
