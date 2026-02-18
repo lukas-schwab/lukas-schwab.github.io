@@ -11,8 +11,6 @@
     --text: #e6eef8;
     --border: rgba(255, 255, 255, 0.05);
     --sidebar-width: 250px;
-    /* Dynamic viewport height for mobile browsers */
-    --vh: 1vh;
 }
 
 * {

@@ -94,7 +94,6 @@
         height: auto;
         min-height: 100vh;
         min-height: 100dvh;
-        min-height: calc(var(--vh, 1vh) * 100);
         overflow: auto;
         padding-bottom: env(safe-area-inset-bottom, 20px);
     }
@@ -103,7 +102,6 @@
         height: auto;
         min-height: 100vh;
         min-height: 100dvh;
-        min-height: calc(var(--vh, 1vh) * 100);
         overflow: visible;
         padding-bottom: 2rem;
     }

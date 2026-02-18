@@ -72,8 +72,6 @@
     /* Fallback */
     height: 100dvh;
     /* Modern browsers */
-    height: calc(var(--vh, 1vh) * 100);
-    /* Custom property */
     overflow-y: auto;
     box-sizing: border-box;
 }

@@ -7,82 +7,9 @@ import { loadPageHTML } from './modules/utils.js';
 import { applyTranslations, t, getUserLanguage, setUserLanguage } from './modules/i18n.js';
 import { COOLDOWN } from './modules/constants.js';
 
-
-// Fix for mobile viewport height (handles address bar showing/hiding)
-// This is particularly important for Android Chrome/Brave
-let lastHeight = 0;
-
-// Reset function to clear the tracked height (call when loading new content)
-function resetViewportHeight() {
-    lastHeight = 0;
-    console.log('Viewport height tracking reset');
-}
-
-function setViewportHeight() {
-    // Use visualViewport API if available (better for mobile)
-    let height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-    // On Android, we want to use the LARGEST height we've seen
-    // This prevents layout shift when the address bar hides
-    if (height > lastHeight) {
-        lastHeight = height;
-    }
-
-    const vh = lastHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-
-    // Debug log for testing
-    console.log(`Viewport height set: ${lastHeight}px (${vh}px per vh unit)`);
-}
-
-// Update on load, resize, scroll, and orientation change
-let resizeTimer;
-function handleResize() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-        requestAnimationFrame(setViewportHeight);
-    }, 50);
-}
-
-// Initial call
-setViewportHeight();
-
-// Listen to multiple events for better coverage
-window.addEventListener('resize', handleResize);
-window.addEventListener('scroll', handleResize, { passive: true });
-window.addEventListener('orientationchange', () => {
-    lastHeight = 0; // Reset on orientation change
-    setTimeout(setViewportHeight, 100);
-});
-
-// Use visualViewport events if available (modern browsers)
-if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', handleResize);
-    window.visualViewport.addEventListener('scroll', handleResize, { passive: true });
-}
-
-// Android-specific: Recalculate on touch (when user starts scrolling)
-document.addEventListener('touchstart', (event) => {
-    const target = event.target;
-    if (target && target.closest && target.closest('.landing-start-btn')) {
-        return;
-    }
-    requestAnimationFrame(setViewportHeight);
-}, { passive: true, once: false });
-
-// Recalculate after page is fully loaded (Android address bar settles)
-window.addEventListener('load', () => {
-    setTimeout(setViewportHeight, 100);
-    setTimeout(setViewportHeight, 300);
-    setTimeout(setViewportHeight, 500);
-});
-
-// Recalculate when page becomes visible (user returns from another tab/app)
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-        setTimeout(setViewportHeight, 100);
-    }
-});
+// Mobile viewport height is now handled by CSS using 100dvh (dynamic viewport height)
+// No JavaScript calculation needed - modern browsers handle address bar showing/hiding automatically
+// Fallback chain in CSS: 100vh → 100dvh for broader compatibility
 
 // Dummy tasks - one for each task type (will prepend one to each batch)
 const DUMMY_TASKS = {
@@ -274,13 +201,6 @@ async function showLandingPage() {
     // Apply translations
     applyTranslations(elements.taskContainer);
 
-    // Reset and recalculate viewport height
-    resetViewportHeight();
-    requestAnimationFrame(() => {
-        setViewportHeight();
-        setTimeout(setViewportHeight, 100);
-    });
-
     // Set initial task count if tasks are already loaded
     if (tasksLoaded) {
         updateUIWithTasks();
@@ -388,13 +308,6 @@ async function loadTask(index) {
         // Apply translations to the newly added content
         applyTranslations(elements.taskContainer);
 
-        // Reset and recalculate viewport height for completion page
-        resetViewportHeight();
-        requestAnimationFrame(() => {
-            setViewportHeight();
-            setTimeout(setViewportHeight, 100);
-        });
-
         // Copy link button handler
         const copyLinkBtn = document.getElementById('copy-link-btn');
         if (copyLinkBtn) {
@@ -476,15 +389,6 @@ async function loadTask(index) {
     applyTranslations(elements.taskContainer);
 
     window.scrollTo(0, 0);
-
-    // Reset and recalculate viewport height for new task
-    resetViewportHeight();
-    // Recalculate immediately and after DOM settles
-    requestAnimationFrame(() => {
-        setViewportHeight();
-        setTimeout(setViewportHeight, 100);
-        setTimeout(setViewportHeight, 300);
-    });
 
     // Initialize task controller
     currentCleanup = taskMeta.controller.init(elements.taskContainer, taskConfig);
@@ -598,13 +502,6 @@ async function showLockScreen() {
     const lockHTML = await loadPageHTML('lock');
     elements.taskContainer.innerHTML = lockHTML;
     applyTranslations(elements.taskContainer);
-
-    // Reset and recalculate viewport height for lock screen
-    resetViewportHeight();
-    requestAnimationFrame(() => {
-        setViewportHeight();
-        setTimeout(setViewportHeight, 100);
-    });
 
     const passwordInput = document.getElementById('password-input');
     const unlockBtn = document.getElementById('unlock-btn');
