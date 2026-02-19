@@ -519,7 +519,7 @@ pre {
     background: linear-gradient(135deg, #7c3aed, #6d28d9);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);

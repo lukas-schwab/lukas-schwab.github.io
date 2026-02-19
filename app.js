@@ -70,6 +70,124 @@ let taskStartTime = null;
 let batchCount = 0; // Track which batch we're on (0-3)
 let nextBatchPromise = null; // Promise for fetching the next batch
 
+const prefetchedImageUrls = new Set();
+const inFlightImagePrefetches = new Map();
+
+function getConnectionProfile() {
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const saveData = Boolean(connection?.saveData);
+    const effectiveType = connection?.effectiveType || 'unknown';
+
+    let concurrency = 4;
+    if (saveData || effectiveType === '2g') {
+        concurrency = 1;
+    } else if (effectiveType === '3g') {
+        concurrency = 2;
+    }
+
+    return { saveData, effectiveType, concurrency };
+}
+
+function getTaskImageUrls(task = {}) {
+    const assets = task.assets || {};
+    const urls = [];
+
+    if (typeof assets.img === 'string' && assets.img) urls.push(assets.img);
+    if (typeof assets.imgA === 'string' && assets.imgA) urls.push(assets.imgA);
+    if (typeof assets.imgB === 'string' && assets.imgB) urls.push(assets.imgB);
+
+    return urls;
+}
+
+function getAllDummyImageUrls() {
+    return Object.values(DUMMY_TASKS)
+        .flatMap(task => getTaskImageUrls(task));
+}
+
+function prefetchSingleImage(url) {
+    if (!url) return Promise.resolve();
+    if (prefetchedImageUrls.has(url)) return Promise.resolve();
+    if (inFlightImagePrefetches.has(url)) return inFlightImagePrefetches.get(url);
+
+    const promise = new Promise(resolve => {
+        const img = new Image();
+        img.decoding = 'async';
+
+        const complete = () => {
+            prefetchedImageUrls.add(url);
+            inFlightImagePrefetches.delete(url);
+            resolve();
+        };
+
+        img.onload = complete;
+        img.onerror = () => {
+            inFlightImagePrefetches.delete(url);
+            resolve();
+        };
+        img.src = url;
+    });
+
+    inFlightImagePrefetches.set(url, promise);
+    return promise;
+}
+
+async function prefetchImageUrls(urls = [], options = {}) {
+    const uniqueUrls = [...new Set(urls.filter(Boolean))]
+        .filter(url => !prefetchedImageUrls.has(url) && !inFlightImagePrefetches.has(url));
+
+    if (uniqueUrls.length === 0) return;
+
+    const { saveData, concurrency: connectionConcurrency } = getConnectionProfile();
+    const requestedConcurrency = options.concurrency;
+    const concurrency = Math.max(
+        1,
+        Math.min(
+            Number.isFinite(requestedConcurrency) ? requestedConcurrency : connectionConcurrency,
+            connectionConcurrency
+        )
+    );
+
+    const maxCount = Number.isFinite(options.maxCount)
+        ? Math.max(0, options.maxCount)
+        : (saveData ? 8 : Number.POSITIVE_INFINITY);
+
+    const queue = uniqueUrls.slice(0, maxCount);
+
+    const workers = Array.from({ length: Math.min(concurrency, queue.length) }, async () => {
+        while (queue.length > 0) {
+            const nextUrl = queue.shift();
+            await prefetchSingleImage(nextUrl);
+        }
+    });
+
+    await Promise.all(workers);
+}
+
+function scheduleImagePrefetch(urls = [], options = {}) {
+    const run = () => prefetchImageUrls(urls, options).catch(err => {
+        console.error('Image prefetch failed:', err);
+    });
+
+    if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(() => {
+            run();
+        }, { timeout: 1200 });
+        return;
+    }
+
+    setTimeout(run, 0);
+}
+
+function prefetchTaskBatchImages(tasks = []) {
+    const urls = tasks.flatMap(task => getTaskImageUrls(task));
+    scheduleImagePrefetch(urls);
+}
+
+function prefetchDummyImages() {
+    const dummyUrls = getAllDummyImageUrls();
+    scheduleImagePrefetch(dummyUrls, { concurrency: 2, maxCount: dummyUrls.length });
+}
+
 // Expose taskStartTime getter globally for controllers
 window.getTaskStartTime = () => taskStartTime;
 
@@ -265,6 +383,7 @@ async function showLandingPage() {
                 taskList = tasks;
                 tasksLoaded = true;
                 batchCount = 1;
+                prefetchTaskBatchImages(taskList);
                 updateUIWithTasks();
             }
             if (taskList.length === 0) {
@@ -352,6 +471,7 @@ async function loadTask(index) {
                 if (nextTasks && nextTasks.length > 0) {
                     taskList = [...taskList, ...nextTasks];
                     tasksLoaded = true;
+                    prefetchTaskBatchImages(nextTasks);
                     loadTask(currentTaskIndex + 1);
                 } else {
                     storage.setCooldown();
@@ -365,7 +485,7 @@ async function loadTask(index) {
         return;
     }
 
-    // No prefetching: only fetch tasks when a user clicks a button
+    // Task HTML loads on demand; image assets are prefetched in the background.
 
     // Hide results when entering a task
     if (elements.storageView) {
@@ -411,6 +531,7 @@ window.addEventListener('task-completed', async () => {
             if (nextBatch && nextBatch.length > 0) {
                 taskList.push(...nextBatch);
                 tasksLoaded = true;
+                prefetchTaskBatchImages(nextBatch);
             } else {
                 storage.setCooldown();
                 showToast(t('messages.noMoreTasks'), 6000);
@@ -437,6 +558,7 @@ window.addEventListener('task-completed', async () => {
             const nextDummyTask = DUMMY_TASKS[userProgress.nextTaskType];
             if (nextDummyTask) {
                 taskList.push(nextDummyTask);
+                prefetchTaskBatchImages([nextDummyTask]);
             }
         }
 
@@ -538,6 +660,8 @@ async function showLockScreen() {
 
 // Initial load
 document.addEventListener('DOMContentLoaded', async () => {
+    prefetchDummyImages();
+
     // Set HTML lang attribute based on user's browser language
     document.documentElement.lang = getUserLanguage();
 
