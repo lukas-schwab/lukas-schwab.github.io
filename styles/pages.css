@@ -398,15 +398,6 @@ pre {
     -webkit-text-fill-color: transparent;
 }
 
-.landing-subtitle {
-    font-size: 1.25rem;
-    color: var(--muted);
-    margin: 0;
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
 .landing-content {
     width: 100%;
     animation: fadeInUp 1s ease-out 0.3s both;
@@ -472,39 +463,6 @@ pre {
     line-height: 1.6;
     margin: 0;
     font-size: 0.95rem;
-}
-
-.landing-features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    margin-bottom: 2.5rem;
-    padding: 1.5rem;
-    background: rgba(124, 58, 237, 0.05);
-    border-radius: 12px;
-    border: 1px solid rgba(124, 58, 237, 0.1);
-}
-
-.feature-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--muted);
-    font-size: 0.95rem;
-}
-
-.check-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(135deg, #7c3aed, #a78bfa);
-    border-radius: 50%;
-    color: white;
-    font-weight: bold;
-    font-size: 0.75rem;
 }
 
 .landing-start-btn {

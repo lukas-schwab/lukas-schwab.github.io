@@ -84,9 +84,6 @@
         aspect-ratio: 4 / 1;
     }
 
-    .imgwrap.aspect-10-1 {
-        aspect-ratio: 4 / 1;
-    }
 }
 
 @media (max-width: 768px) {
@@ -174,17 +171,8 @@
         margin-bottom: 2rem;
     }
 
-    .landing-subtitle {
-        font-size: 1rem;
-    }
-
     .landing-cards {
         grid-template-columns: 1fr;
-    }
-
-    .landing-features {
-        flex-direction: column;
-        align-items: flex-start;
     }
 
     .landing-start-btn {

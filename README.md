@@ -264,9 +264,11 @@ Old modules (in `modules/`) are kept for reference but superseded:
 - `property_identifier.js` → `controllers/property-identifier.js`
 - `similarity.js` → `controllers/similarity-labeling.js`
 
-Old styles are consolidated:
-- `styles.css` → `styles/`
-- `spa.css` → `styles/`
+Old style entry files were removed after consolidation:
+- `styles.css` (removed)
+- `spa.css` (removed)
+
+Active runtime styles are loaded from `styles/` via `index.html`.
 
 ## 📋 Checklist for Maintenance
 
