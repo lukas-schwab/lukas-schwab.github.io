@@ -1,56 +1,15 @@
 import { storage } from './modules/storage.js';
-import { RegionLocatorController } from './modules/controllers/region-locator.js';
-import { LabelingController } from './modules/controllers/labeling.js';
-import { PropertyIdentifierController } from './modules/controllers/property-identifier.js';
-import { SimilarityLabelingController } from './modules/controllers/similarity-labeling.js';
 import { loadPageHTML } from './modules/utils.js';
 import { applyTranslations, t, getUserLanguage, setUserLanguage } from './modules/i18n.js';
 import { COOLDOWN } from './modules/constants.js';
+import { DUMMY_TASKS, taskControllers } from './modules/app/config/task-registry.js';
+import { prefetchTaskBatchImages, prefetchDummyImages } from './modules/app/services/image-prefetch.js';
+import { fetchTasksFromApi as fetchTasksFromApiService, uploadResultsToApi as uploadResultsToApiService } from './modules/app/services/task-api.js';
+import { runtimeState } from './modules/app/state/runtime-state.js';
 
 // Mobile viewport height is now handled by CSS using 100dvh (dynamic viewport height)
 // No JavaScript calculation needed - modern browsers handle address bar showing/hiding automatically
 // Fallback chain in CSS: 100vh → 100dvh for broader compatibility
-
-// Dummy tasks - one for each task type (will prepend one to each batch)
-const DUMMY_TASKS = {
-    labeling: {
-        type: 'labeling',
-        isDummy: true,
-        assets: {
-            img: 'assets/dummy/label.png',
-        }
-    },
-    image_region_locator: {
-        type: 'image_region_locator',
-        isDummy: true,
-        assets: {
-            imgA: 'assets/dummy/reference.png',
-            imgB: 'assets/dummy/scheme.png'
-        }
-    },
-    property_identifier: {
-        type: 'property_identifier',
-        isDummy: true,
-        assets: {
-            img: 'assets/dummy/identify.png',
-        }
-    },
-    similarity_labeling: {
-        type: 'similarity_labeling',
-        isDummy: true,
-        assets: {
-            imgA: 'assets/dummy/left.png',
-            imgB: 'assets/dummy/right.png',
-        }
-    }
-};
-
-const taskControllers = {
-    image_region_locator: { controller: RegionLocatorController, page: 'region-locator' },
-    labeling: { controller: LabelingController, page: 'labeling' },
-    property_identifier: { controller: PropertyIdentifierController, page: 'property-identifier' },
-    similarity_labeling: { controller: SimilarityLabelingController, page: 'similarity-labeling' }
-};
 
 const elements = {
     taskContainer: document.getElementById('task-container'),
@@ -61,177 +20,25 @@ const elements = {
     storageView: document.getElementById('storage-view')
 };
 
-let currentCleanup = null;
-let currentTaskIndex = 0;
-let taskList = [];
-let userProgress = null;
-let tasksLoaded = false;
-let taskStartTime = null;
-let batchCount = 0; // Track which batch we're on (0-3)
-let nextBatchPromise = null; // Promise for fetching the next batch
-
-const prefetchedImageUrls = new Set();
-const inFlightImagePrefetches = new Map();
-
-function getConnectionProfile() {
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    const saveData = Boolean(connection?.saveData);
-    const effectiveType = connection?.effectiveType || 'unknown';
-
-    let concurrency = 4;
-    if (saveData || effectiveType === '2g') {
-        concurrency = 1;
-    } else if (effectiveType === '3g') {
-        concurrency = 2;
-    }
-
-    return { saveData, effectiveType, concurrency };
-}
-
-function getTaskImageUrls(task = {}) {
-    const assets = task.assets || {};
-    const urls = [];
-
-    if (typeof assets.img === 'string' && assets.img) urls.push(assets.img);
-    if (typeof assets.imgA === 'string' && assets.imgA) urls.push(assets.imgA);
-    if (typeof assets.imgB === 'string' && assets.imgB) urls.push(assets.imgB);
-
-    return urls;
-}
-
-function getAllDummyImageUrls() {
-    return Object.values(DUMMY_TASKS)
-        .flatMap(task => getTaskImageUrls(task));
-}
-
-function prefetchSingleImage(url) {
-    if (!url) return Promise.resolve();
-    if (prefetchedImageUrls.has(url)) return Promise.resolve();
-    if (inFlightImagePrefetches.has(url)) return inFlightImagePrefetches.get(url);
-
-    const promise = new Promise(resolve => {
-        const img = new Image();
-        img.decoding = 'async';
-
-        const complete = () => {
-            prefetchedImageUrls.add(url);
-            inFlightImagePrefetches.delete(url);
-            resolve();
-        };
-
-        img.onload = complete;
-        img.onerror = () => {
-            inFlightImagePrefetches.delete(url);
-            resolve();
-        };
-        img.src = url;
-    });
-
-    inFlightImagePrefetches.set(url, promise);
-    return promise;
-}
-
-async function prefetchImageUrls(urls = [], options = {}) {
-    const uniqueUrls = [...new Set(urls.filter(Boolean))]
-        .filter(url => !prefetchedImageUrls.has(url) && !inFlightImagePrefetches.has(url));
-
-    if (uniqueUrls.length === 0) return;
-
-    const { saveData, concurrency: connectionConcurrency } = getConnectionProfile();
-    const requestedConcurrency = options.concurrency;
-    const concurrency = Math.max(
-        1,
-        Math.min(
-            Number.isFinite(requestedConcurrency) ? requestedConcurrency : connectionConcurrency,
-            connectionConcurrency
-        )
-    );
-
-    const maxCount = Number.isFinite(options.maxCount)
-        ? Math.max(0, options.maxCount)
-        : (saveData ? 8 : Number.POSITIVE_INFINITY);
-
-    const queue = uniqueUrls.slice(0, maxCount);
-
-    const workers = Array.from({ length: Math.min(concurrency, queue.length) }, async () => {
-        while (queue.length > 0) {
-            const nextUrl = queue.shift();
-            await prefetchSingleImage(nextUrl);
-        }
-    });
-
-    await Promise.all(workers);
-}
-
-function scheduleImagePrefetch(urls = [], options = {}) {
-    const run = () => prefetchImageUrls(urls, options).catch(err => {
-        console.error('Image prefetch failed:', err);
-    });
-
-    if (typeof window.requestIdleCallback === 'function') {
-        window.requestIdleCallback(() => {
-            run();
-        }, { timeout: 1200 });
-        return;
-    }
-
-    setTimeout(run, 0);
-}
-
-function prefetchTaskBatchImages(tasks = []) {
-    const urls = tasks.flatMap(task => getTaskImageUrls(task));
-    scheduleImagePrefetch(urls);
-}
-
-function prefetchDummyImages() {
-    const dummyUrls = getAllDummyImageUrls();
-    scheduleImagePrefetch(dummyUrls, { concurrency: 2, maxCount: dummyUrls.length });
-}
+// Mutable runtime app state lives in runtimeState
 
 // Expose taskStartTime getter globally for controllers
-window.getTaskStartTime = () => taskStartTime;
+window.getTaskStartTime = () => runtimeState.taskStartTime;
 
 // Cooldown functions removed as they are now in storage.js
 
 // Function to fetch tasks from the API
 async function fetchTasksFromApi() {
-    if (storage.isCoolingDown()) return [];
-
-    const userId = storage.getUserUuid();
-    const url = `https://europe-west3-concept-interpretability-efded.cloudfunctions.net/get_tasks_batch?userId=${userId}`;
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-
-        // Handle both old array format and new object format
-        let tasks = [];
-        if (data.tasks && Array.isArray(data.tasks)) {
-            userProgress = data.userProgress || null;
-            tasks = data.tasks;
-        } else if (data.fullSequence) {
-            // New format with metadata
-            userProgress = data;
-            tasks = data.tasks || [];
-        } else {
-            tasks = Array.isArray(data) ? data : [];
-        }
-
-        return tasks;
-    } catch (error) {
-        console.error('Could not fetch tasks:', error);
-        return [];
-    }
+    return fetchTasksFromApiService(storage, (progress) => {
+        runtimeState.userProgress = progress;
+    });
 }
 
 // Fetch the next batch asynchronously and return a promise
 function startFetchingNextBatch(afterUploadPromise = null) {
-    if (nextBatchPromise) return nextBatchPromise; // Already fetching
+    if (runtimeState.nextBatchPromise) return runtimeState.nextBatchPromise; // Already fetching
     // Allow up to 4 batches; block only after 4 have been started
-    if (batchCount >= 5) return Promise.resolve(null);
+    if (runtimeState.batchCount >= 5) return Promise.resolve(null);
 
     const runFetch = async () => {
         // Ensure previous batch upload (if provided) finishes before fetching new tasks
@@ -246,47 +53,21 @@ function startFetchingNextBatch(afterUploadPromise = null) {
         return fetchTasksFromApi();
     };
 
-    nextBatchPromise = runFetch();
-    return nextBatchPromise;
+    runtimeState.nextBatchPromise = runFetch();
+    return runtimeState.nextBatchPromise;
 }
 
 // Get the fetched batch and clear the promise
 async function getNextBatch() {
-    if (!nextBatchPromise) return null;
-    const tasks = await nextBatchPromise;
-    nextBatchPromise = null;
+    if (!runtimeState.nextBatchPromise) return null;
+    const tasks = await runtimeState.nextBatchPromise;
+    runtimeState.nextBatchPromise = null;
     return tasks;
 }
 
 // Function to upload results to the API
 async function uploadResultsToApi() {
-    const allResults = storage.getResults();
-    // Filter out dummy tasks before uploading
-    const results = allResults.filter(result => !result.isDummy);
-    if (results.length === 0) return true;
-
-    const url = 'https://europe-west3-concept-interpretability-efded.cloudfunctions.net/submit_results_batch';
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(results)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Upload failed! status: ${response.status}`);
-        }
-
-        // Clear local storage after successful upload of this batch
-        storage.clear();
-        return true;
-    } catch (error) {
-        console.error('Could not upload batch results:', error);
-        return false;
-    }
+    return uploadResultsToApiService(storage);
 }
 
 function showToast(message, cooldown=COOLDOWN.TOAST_DURATION) {
@@ -307,7 +88,7 @@ function showToast(message, cooldown=COOLDOWN.TOAST_DURATION) {
 function updateUIWithTasks() {
     const card1Text = elements.taskContainer.querySelector('[data-i18n="landing.card1Text"]');
     if (card1Text) {
-        const translatedText = t('landing.card1Text').replace('{count}', taskList.length);
+        const translatedText = t('landing.card1Text').replace('{count}', runtimeState.taskList.length);
         card1Text.textContent = translatedText;
     }
 }
@@ -320,7 +101,7 @@ async function showLandingPage() {
     applyTranslations(elements.taskContainer);
 
     // Set initial task count if tasks are already loaded
-    if (tasksLoaded) {
+    if (runtimeState.tasksLoaded) {
         updateUIWithTasks();
     }
 
@@ -346,7 +127,7 @@ async function showLandingPage() {
             langLabelDe.classList.toggle('active', newLang === 'de');
 
             // Re-translate the task count
-            if (tasksLoaded) {
+            if (runtimeState.tasksLoaded) {
                 updateUIWithTasks();
             }
         });
@@ -371,22 +152,22 @@ async function showLandingPage() {
             }
 
 
-            if (!tasksLoaded) {
+            if (!runtimeState.tasksLoaded) {
                 const tasks = await fetchTasksFromApi();
                 // Prepend dummy for first batch
-                if (tasks.length > 0 && userProgress && userProgress.taskType) {
-                    const dummyTask = DUMMY_TASKS[userProgress.taskType];
+                if (tasks.length > 0 && runtimeState.userProgress && runtimeState.userProgress.taskType) {
+                    const dummyTask = DUMMY_TASKS[runtimeState.userProgress.taskType];
                     if (dummyTask) {
                         tasks.unshift(dummyTask);
                     }
                 }
-                taskList = tasks;
-                tasksLoaded = true;
-                batchCount = 1;
-                prefetchTaskBatchImages(taskList);
+                runtimeState.taskList = tasks;
+                runtimeState.tasksLoaded = true;
+                runtimeState.batchCount = 1;
+                prefetchTaskBatchImages(runtimeState.taskList);
                 updateUIWithTasks();
             }
-            if (taskList.length === 0) {
+            if (runtimeState.taskList.length === 0) {
                 storage.setCooldown();
                 const buttonText = startButton.querySelector('span:not(.btn-arrow)');
                 if (buttonText) {
@@ -403,12 +184,12 @@ async function showLandingPage() {
 }
 
 async function loadTask(index) {
-    if (currentCleanup) {
-        currentCleanup();
-        currentCleanup = null;
+    if (runtimeState.currentCleanup) {
+        runtimeState.currentCleanup();
+        runtimeState.currentCleanup = null;
     }
 
-    if (index >= taskList.length) {
+    if (index >= runtimeState.taskList.length) {
         // Current batch is finished.
         // Upload and next-batch fetching happen sequentially on task completion.
 
@@ -453,7 +234,7 @@ async function loadTask(index) {
         const moreTasksBtn = document.getElementById('more-tasks-btn');
         if (moreTasksBtn) {
             // // Show the "More tasks" button only if backend says we're not finished
-            // if (userProgress && !userProgress.finished) {
+            // if (runtimeState.userProgress && !runtimeState.userProgress.finished) {
             //     moreTasksBtn.style.setProperty('display', 'inline-block', 'important');
             // }
 
@@ -469,10 +250,10 @@ async function loadTask(index) {
 
                 const nextTasks = await fetchTasksFromApi();
                 if (nextTasks && nextTasks.length > 0) {
-                    taskList = [...taskList, ...nextTasks];
-                    tasksLoaded = true;
+                    runtimeState.taskList = [...runtimeState.taskList, ...nextTasks];
+                    runtimeState.tasksLoaded = true;
                     prefetchTaskBatchImages(nextTasks);
-                    loadTask(currentTaskIndex + 1);
+                    loadTask(runtimeState.currentTaskIndex + 1);
                 } else {
                     storage.setCooldown();
                     showToast(t('messages.noMoreTasks'), 6000);
@@ -492,7 +273,7 @@ async function loadTask(index) {
         elements.storageView.style.display = 'none';
     }
 
-    const taskConfig = taskList[index];
+    const taskConfig = runtimeState.taskList[index];
     const taskType = taskConfig.taskType || taskConfig.type;
     const taskMeta = taskControllers[taskType];
 
@@ -511,26 +292,26 @@ async function loadTask(index) {
     window.scrollTo(0, 0);
 
     // Initialize task controller
-    currentCleanup = taskMeta.controller.init(elements.taskContainer, taskConfig);
-    currentTaskIndex = index;
+    runtimeState.currentCleanup = taskMeta.controller.init(elements.taskContainer, taskConfig);
+    runtimeState.currentTaskIndex = index;
 
     // Record task start time
-    taskStartTime = Date.now();
+    runtimeState.taskStartTime = Date.now();
 }
 
 // Listen for task completion signal from storage
 window.addEventListener('task-completed', async () => {
-    const currentTask = taskList[currentTaskIndex];
+    const currentTask = runtimeState.taskList[runtimeState.currentTaskIndex];
     const isDummyTask = Boolean(currentTask?.isDummy);
-    const hasPendingBatchFetch = Boolean(nextBatchPromise);
+    const hasPendingBatchFetch = Boolean(runtimeState.nextBatchPromise);
 
     // If we're on the dummy while the next batch is still being fetched, wait for it
     if (isDummyTask && hasPendingBatchFetch) {
         try {
             const nextBatch = await getNextBatch();
             if (nextBatch && nextBatch.length > 0) {
-                taskList.push(...nextBatch);
-                tasksLoaded = true;
+                runtimeState.taskList.push(...nextBatch);
+                runtimeState.tasksLoaded = true;
                 prefetchTaskBatchImages(nextBatch);
             } else {
                 storage.setCooldown();
@@ -543,34 +324,34 @@ window.addEventListener('task-completed', async () => {
 
         // Move past the dummy to the first task of the fetched batch (or completion screen if none)
         setTimeout(() => {
-            currentTaskIndex++;
-            loadTask(currentTaskIndex);
+            runtimeState.currentTaskIndex++;
+            loadTask(runtimeState.currentTaskIndex);
         }, 250);
         return;
     }
 
-    const isEndOfBatch = currentTaskIndex === taskList.length - 1;
+    const isEndOfBatch = runtimeState.currentTaskIndex === runtimeState.taskList.length - 1;
 
     if (isEndOfBatch) {
         // Immediately increment batch and append next dummy (NO WAITING)
-        batchCount++;
-        if (userProgress && userProgress.nextTaskType && batchCount <= 4) {
-            const nextDummyTask = DUMMY_TASKS[userProgress.nextTaskType];
+        runtimeState.batchCount++;
+        if (runtimeState.userProgress && runtimeState.userProgress.nextTaskType && runtimeState.batchCount <= 4) {
+            const nextDummyTask = DUMMY_TASKS[runtimeState.userProgress.nextTaskType];
             if (nextDummyTask) {
-                taskList.push(nextDummyTask);
+                runtimeState.taskList.push(nextDummyTask);
                 prefetchTaskBatchImages([nextDummyTask]);
             }
         }
 
         // Start upload, then fetch next batch after upload completes (to preserve order server-side)
-        if (!userProgress || !userProgress.finished) {
+        if (!runtimeState.userProgress || !runtimeState.userProgress.finished) {
             const uploadPromise = uploadResultsToApi().catch(err => {
                 console.error('Upload failed:', err);
                 showToast(t('messages.uploadFailedToast') || 'Connection error. Progress might not be saved.');
                 throw err;
             });
 
-            if (batchCount < 5) {
+            if (runtimeState.batchCount < 5) {
                 startFetchingNextBatch(uploadPromise).catch(err => {
                     console.error('Failed to fetch next batch:', err);
                 });
@@ -579,8 +360,8 @@ window.addEventListener('task-completed', async () => {
 
         // Load dummy (or completion if no dummy) immediately
         setTimeout(() => {
-            currentTaskIndex++;
-            loadTask(currentTaskIndex);
+            runtimeState.currentTaskIndex++;
+            loadTask(runtimeState.currentTaskIndex);
         }, 250);
 
         return; // Don't execute the setTimeout below (we already scheduled loadTask above)
@@ -588,8 +369,8 @@ window.addEventListener('task-completed', async () => {
 
     // Regular task completion (not end of batch) - just load next task
     setTimeout(() => {
-        currentTaskIndex++;
-        loadTask(currentTaskIndex);
+        runtimeState.currentTaskIndex++;
+        loadTask(runtimeState.currentTaskIndex);
     }, 250); // Small delay to let user see "Submitted" toast
 });
 

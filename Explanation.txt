@@ -1,0 +1,1 @@
+To better understand how artificial neural networks work when processing images, we extract visual concepts from their internal decision-making. To determine how useful these concepts are, we can use established technical metrics. In this study we investigate whether these metrics align with human perception.
