@@ -27,10 +27,12 @@ const translations = {
         // Labeling Page
         labeling: {
             title: 'You see details of images of class [class]. Label the common detail.',
-            subtitle: 'Please type something even if you are unsure about it.',
+            subtitle: 'Try to label the common detail and not the class itself.',
+            infoTooltip: 'The content of the images can differ from the class name.',
             defaultClassName: "fish",
             placeholder: 'Enter label here...',
-            submitBtn: 'Submit'
+            submitBtn: 'Submit',
+            emptyLabelTooltip: 'Please type something even if you are unsure about it.'
         },
         // Property Identifier Page
         propertyId: {
@@ -121,10 +123,12 @@ const translations = {
         // Labeling Page
         labeling: {
             title: 'Du kannst Details von Bildern der Klasse [class] sehen. Beschrifte das gemeinsame Detail.',
-            subtitle: 'Bitte gebe auch dann etwas ein, wenn Du Dir unsicher bist.',
+            subtitle: 'Versuche das gemeinsame Detail zu nennen und nicht die Klasse selbst.',
+            infoTooltip: 'Der Bildinhalt kann vom Klassennamen abweichen.',
             defaultClassName: "Fisch",
             placeholder: 'Dein Wort...',
-            submitBtn: 'Absenden'
+            submitBtn: 'Absenden',
+            emptyLabelTooltip: 'Bitte gebe auch dann etwas ein, wenn Du Dir unsicher bist.'
         },
         // Property Identifier Page
         propertyId: {

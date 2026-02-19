@@ -585,6 +585,14 @@ pre {
     color: #a78bfa;
 }
 
+.footer-link.is-hidden {
+    display: none;
+}
+
+.footer-contact-toggle {
+    cursor: pointer;
+}
+
 .footer-divider {
     width: 1px;
     height: 2rem;

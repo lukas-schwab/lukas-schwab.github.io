@@ -27,6 +27,8 @@ export const LabelingController = {
         const charCount = container.querySelector('#currentCharCount');
         const image = container.querySelector('#labelImage');
         const titleElement = container.querySelector('h1[data-i18n="labeling.title"]');
+        const tooltipWrapper = container.querySelector('#emptyLabelTooltip');
+        const tooltipContent = tooltipWrapper?.querySelector('.tooltip-content');
 
         // Set image source
         if (image) image.src = data.img || 'assets/patches/patch_3_0.png';
@@ -39,8 +41,35 @@ export const LabelingController = {
             }
         }
 
+        // Function to show tooltip
+        const showEmptyTooltip = () => {
+            if (tooltipContent) {
+                tooltipContent.style.display = 'block';
+                tooltipContent.style.opacity = '1';
+                tooltipContent.style.transform = 'translateX(-50%) translateY(0)';
+                setTimeout(() => {
+                    hideEmptyTooltip();
+                }, 2000);
+            }
+        };
+
+        // Function to hide tooltip
+        const hideEmptyTooltip = () => {
+            if (tooltipContent) {
+                tooltipContent.style.opacity = '0';
+                tooltipContent.style.transform = 'translateX(-50%) translateY(10px)';
+                setTimeout(() => {
+                    tooltipContent.style.display = 'none';
+                }, 300);
+            }
+        };
+
         const handleInput = () => {
             charCount.textContent = input.value.length;
+            // Hide tooltip when user starts typing
+            if (input.value.length > 0) {
+                hideEmptyTooltip();
+            }
         };
 
         const handleSubmit = () => {
@@ -56,7 +85,9 @@ export const LabelingController = {
                     charCount.textContent = '0';
                 });
             } else {
-                showToast(t('messages.enterLabel'));
+                // Show tooltip instead of toast
+                showEmptyTooltip();
+                input.focus();
             }
         };
 

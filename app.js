@@ -384,6 +384,25 @@ document.addEventListener('click', (e) => {
     // If we need any other global event delegation, it would go here
 });
 
+function setupFooterContactToggle() {
+    const contactToggle = document.getElementById('footer-contact-toggle');
+    const contactEmail = document.getElementById('footer-contact-email');
+
+    if (!contactToggle || !contactEmail) return;
+
+    const revealEmail = () => {
+        contactEmail.classList.remove('is-hidden');
+    };
+
+    contactToggle.addEventListener('click', revealEmail);
+    contactToggle.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            revealEmail();
+        }
+    });
+}
+
 elements.clearStorage.addEventListener('click', () => {
     if (confirm(t('messages.clearConfirm'))) {
         storage.clear();
@@ -442,6 +461,7 @@ async function showLockScreen() {
 // Initial load
 document.addEventListener('DOMContentLoaded', async () => {
     prefetchDummyImages();
+    setupFooterContactToggle();
 
     // Set HTML lang attribute based on user's browser language
     document.documentElement.lang = getUserLanguage();

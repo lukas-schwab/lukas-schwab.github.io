@@ -2,7 +2,20 @@
     <div class="header-content">
         <div>
             <h1 data-i18n="labeling.title">You see details of images of class [class]. Label the common detail.</h1>
-            <p class="lead" data-i18n="labeling.subtitle">Please type something even if you are unsure about it.</p>
+            <div class="lead-with-tooltip">
+                <p class="lead" data-i18n="labeling.subtitle">Please type something even if you are unsure about it.</p>
+                <div class="tooltip-wrapper tooltip-icon-wrapper" tabindex="0">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <div class="tooltip-content" data-i18n="labeling.infoTooltip">
+                        Pictures can differ from the class name.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </header>
@@ -17,8 +30,11 @@
     <div class="input-section">
         <div class="char-count"><span id="currentCharCount">0</span>/60</div>
         <div class="input-group">
-            <input type="text" id="imageLabel" name="imageLabel" data-i18n-placeholder="labeling.placeholder" placeholder="Enter label here..." maxlength="60"
-                autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">
+            <div class="tooltip-wrapper" id="emptyLabelTooltip" tabindex="-1" style="position: relative; display: inline-block; width: 100%;">
+                <input type="text" id="imageLabel" data-i18n-placeholder="labeling.placeholder" placeholder="Enter label here..." maxlength="60"
+                    autocomplete="off" aria-autocomplete="none" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">
+                <div class="tooltip-content" data-i18n="labeling.emptyLabelTooltip" style="display: none; bottom: calc(100% + 12px); top: auto;">Can't submit empty label</div>
+            </div>
             <button id="submitBtn" class="primary" data-i18n="labeling.submitBtn">Submit</button>
         </div>
     </div>

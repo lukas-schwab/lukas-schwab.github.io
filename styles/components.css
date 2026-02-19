@@ -111,6 +111,10 @@ p.lead {
 
 .tooltip-wrapper {
     position: relative;
+    outline: none;
+}
+
+.tooltip-icon-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -118,11 +122,10 @@ p.lead {
     padding: 4px;
     border-radius: 50%;
     transition: background 0.2s ease;
-    outline: none;
 }
 
-.tooltip-wrapper:hover,
-.tooltip-wrapper:focus {
+.tooltip-icon-wrapper:hover,
+.tooltip-icon-wrapper:focus {
     background: rgba(255, 255, 255, 0.05);
 }
 
@@ -133,8 +136,8 @@ p.lead {
     transition: all 0.2s ease;
 }
 
-.tooltip-wrapper:hover .info-icon,
-.tooltip-wrapper:focus .info-icon {
+.tooltip-icon-wrapper:hover .info-icon,
+.tooltip-icon-wrapper:focus .info-icon {
     color: var(--accent);
     transform: scale(1.1);
 }
