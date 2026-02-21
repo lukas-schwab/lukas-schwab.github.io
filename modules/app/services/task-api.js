@@ -32,9 +32,7 @@ export async function fetchTasksFromApi(storage, setUserProgress) {
 }
 
 export async function uploadResultsToApi(storage) {
-    const allResults = storage.getResults();
-    // Filter out dummy tasks before uploading
-    const results = allResults.filter(result => !result.isDummy);
+    const results = storage.getResults();
     if (results.length === 0) return true;
 
     const url = 'https://europe-west3-concept-interpretability-efded.cloudfunctions.net/submit_results_batch';

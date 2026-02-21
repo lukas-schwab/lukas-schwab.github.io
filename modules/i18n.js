@@ -132,14 +132,14 @@ const translations = {
         },
         // Property Identifier Page
         propertyId: {
-            title: 'Klicke auf alle Dinge und visuellen Eigenschaften, die du sehen kannst.', 
+            title: 'Klicke auf alle Dinge und visuellen Eigenschaften, die du sehen kannst.',
             subtitle: 'Du kannst so viele Marker setzen wie Du möchtest.',
             undoBtn: 'Letzte Markierung rückgängig',
             submitBtn: 'Absenden'
         },
         // Region Locator Page
         regionLocator: {
-            title: 'Wenn der Inhalt von Bild A teil von Bild B wäre, wo wäre er?',
+            title: 'Wenn der Inhalt von Bild A Teil von Bild B wäre, wo wäre er?',
             subtitle: 'Umkreise die Stelle in Bild B. Du kannst auch mehrmals neu zeichen.',
             cardALabel: 'Bild A (Vorlage)',
             cardBLabel: 'Bild B (Hier umkreisen)',
