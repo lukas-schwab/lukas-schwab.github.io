@@ -57,9 +57,9 @@ const translations = {
         // Similarity Labeling Page
         similarity: {
             title: 'How distinguishable are these two image groups?',
-            subtitle: 'Use the slider below to rank distinguishability from 1 (Easy) to 5 (Hard).',
-            sliderLeft: 'Easy',
-            sliderRight: 'Hard',
+            subtitle: 'Use the slider below to rank distinguishability from 1 (Hard) to 5 (Easy).',
+            sliderLeft: 'Hard',
+            sliderRight: 'Easy',
             submitBtn: 'Submit'
         },
         // Completion Page
