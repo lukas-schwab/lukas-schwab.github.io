@@ -589,8 +589,18 @@ pre {
     display: none;
 }
 
-.footer-contact-toggle {
-    cursor: pointer;
+.footer-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: var(--text);
 }
 
 .footer-divider {

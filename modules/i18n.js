@@ -19,6 +19,7 @@ const translations = {
             card3Title: 'Privacy First',
             card3Text: 'All data is fully pseudonymized. Only task responses are collected—no personal information.',
             startBtn: 'Begin Study',
+            impressumBtn: 'Impressum',
             loadingText: 'Almost there...',
             footerContactTitle: 'Contact',
             footerOrgTitle: 'Organization',
@@ -26,9 +27,9 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'You see details of images of class [class]. Label the common detail.',
-            subtitle: 'Try to label the common detail and not the class itself.',
-            infoTooltip: 'The content of the images can differ from the class name.',
+            title: 'You see details of images of category [class]. Label the common detail.',
+            subtitle: 'Try to label the common detail and not the category itself.',
+            infoTooltip: 'The content of the images can differ from the category name.',
             defaultClassName: "fish",
             placeholder: 'Enter label here...',
             submitBtn: 'Submit',
@@ -115,6 +116,7 @@ const translations = {
             card3Title: 'Deine Privatsphäre',
             card3Text: 'Alle Daten sind vollständig pseudonymisiert. Wir sammeln nur deine Aufgabenlösungen – keine persönlichen Infos.',
             startBtn: 'Los geht\'s',
+            impressumBtn: 'Impressum',
             loadingText: 'Wird vorbereitet...',
             footerContactTitle: 'Kontakt',
             footerOrgTitle: 'Organisation',
@@ -122,9 +124,9 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'Du kannst Details von Bildern der Klasse [class] sehen. Beschrifte das gemeinsame Detail.',
-            subtitle: 'Versuche das gemeinsame Detail zu nennen und nicht die Klasse selbst.',
-            infoTooltip: 'Der Bildinhalt kann vom Klassennamen abweichen.',
+            title: 'Du kannst Details von Bildern der Kategorie [class] sehen. Beschrifte das gemeinsame Detail.',
+            subtitle: 'Versuche das gemeinsame Detail zu nennen und nicht die Kategorie selbst.',
+            infoTooltip: 'Der Bildinhalt kann vom Namen der Kategorie abweichen.',
             defaultClassName: "Fisch",
             placeholder: 'Dein Wort...',
             submitBtn: 'Absenden',
