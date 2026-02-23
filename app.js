@@ -473,12 +473,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     storage.getUserUuid();
     window.history.pushState({}, document.title, "/");
 
-    // Check if site is already unlocked for this session
-    const isUnlocked = sessionStorage.getItem('isUnlocked') === 'true';
+    await showLandingPage();
 
-    if (isUnlocked) {
-        await showLandingPage();
-    } else {
-        await showLockScreen();
-    }
+    // // Check if site is already unlocked for this session
+    // const isUnlocked = sessionStorage.getItem('isUnlocked') === 'true';
+
+    // if (isUnlocked) {
+    //     await showLandingPage();
+    // } else {
+    //     await showLockScreen();
+    // }
 });
