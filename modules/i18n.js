@@ -74,7 +74,15 @@ const translations = {
             shareTitle: 'Share this study',
             shareDescription: 'Copy the link below to share with others:',
             copyBtn: 'Copy Link',
-            copiedBtn: 'Copied!'
+            copiedBtn: 'Copied!',
+            feedbackTitle: 'Optional feedback',
+            feedbackDescription: 'If you want, share any feedback about the study experience.',
+            feedbackPlaceholder: 'Type your feedback here...',
+            feedbackSubmitBtn: 'Send feedback',
+            feedbackSubmittingBtn: 'Sending...',
+            feedbackSentBtn: 'Thanks for your feedback!',
+            feedbackEmptyToast: 'Please enter feedback before sending.',
+            feedbackFailedToast: 'Could not send feedback. Please try again.'
         },
         // Storage View
         storage: {
@@ -172,7 +180,15 @@ const translations = {
             shareTitle: 'Diese Studie teilen',
             shareDescription: 'Kopiere den Link und Teile die Studie weiter:',
             copyBtn: 'Link kopieren',
-            copiedBtn: 'Kopiert!'
+            copiedBtn: 'Kopiert!',
+            feedbackTitle: 'Optionales Feedback',
+            feedbackDescription: 'Wenn du möchtest, teile uns Feedback zu deiner Erfahrung oder Kontext zu deinen Antworten mit.',
+            feedbackPlaceholder: 'Dein Feedback hier eingeben...',
+            feedbackSubmitBtn: 'Feedback senden',
+            feedbackSubmittingBtn: 'Wird gesendet...',
+            feedbackSentBtn: 'Danke für dein Feedback!',
+            feedbackEmptyToast: 'Bitte gib zuerst Feedback ein.',
+            feedbackFailedToast: 'Feedback konnte nicht gesendet werden. Bitte versuche es erneut.'
         },
         // Storage View
         storage: {

@@ -149,6 +149,50 @@ pre {
 
 /* Task Specific Layouts */
 
+/* Completion */
+.completion-page {
+    text-align: center;
+    padding: 4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.completion-card {
+    width: 100%;
+    max-width: 640px;
+    text-align: left;
+}
+
+.completion-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.completion-description {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.completion-share-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.completion-share-row button {
+    white-space: nowrap;
+}
+
+.completion-feedback-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
+}
+
 /* Labeling */
 .labeling-container {
     display: flex;

@@ -58,3 +58,35 @@ export async function uploadResultsToApi(storage) {
         return false;
     }
 }
+
+export async function uploadFeedbackToApi(storage, feedbackText) {
+    const trimmedFeedback = feedbackText?.trim();
+    if (!trimmedFeedback) return true;
+
+    const url = 'https://europe-west3-concept-interpretability-efded.cloudfunctions.net/submit_feedback';
+    const payload = {
+        userUuid: storage.getUserUuid(),
+        groupIdentifier: storage.getGroupIdentifier(),
+        feedback: trimmedFeedback,
+        timestamp: new Date().toISOString()
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Feedback upload failed! status: ${response.status}`);
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Could not upload feedback:', error);
+        return false;
+    }
+}

@@ -4,7 +4,7 @@ import { applyTranslations, t, getUserLanguage, setUserLanguage } from './module
 import { COOLDOWN } from './modules/constants.js';
 import { DUMMY_TASKS, taskControllers } from './modules/app/config/task-registry.js';
 import { prefetchTaskBatchImages, prefetchDummyImages } from './modules/app/services/image-prefetch.js';
-import { fetchTasksFromApi as fetchTasksFromApiService, uploadResultsToApi as uploadResultsToApiService } from './modules/app/services/task-api.js';
+import { fetchTasksFromApi as fetchTasksFromApiService, uploadResultsToApi as uploadResultsToApiService, uploadFeedbackToApi as uploadFeedbackToApiService } from './modules/app/services/task-api.js';
 import { runtimeState } from './modules/app/state/runtime-state.js';
 
 // Mobile viewport height is now handled by CSS using 100dvh (dynamic viewport height)
@@ -68,6 +68,10 @@ async function getNextBatch() {
 // Function to upload results to the API
 async function uploadResultsToApi() {
     return uploadResultsToApiService(storage);
+}
+
+async function uploadFeedbackToApi(feedbackText) {
+    return uploadFeedbackToApiService(storage, feedbackText);
 }
 
 function showToast(message, cooldown=COOLDOWN.TOAST_DURATION) {
@@ -259,6 +263,31 @@ async function loadTask(index) {
                     showToast(t('messages.noMoreTasks'), 6000);
                     moreTasksBtn.disabled = false;
                     moreTasksBtn.textContent = originalText;
+                }
+            });
+        }
+
+        const feedbackInput = document.getElementById('feedback-input');
+        const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
+        if (feedbackInput && submitFeedbackBtn) {
+            submitFeedbackBtn.addEventListener('click', async () => {
+                const feedbackText = feedbackInput.value.trim();
+                if (!feedbackText) {
+                    showToast(t('completion.feedbackEmptyToast'));
+                    return;
+                }
+
+                submitFeedbackBtn.disabled = true;
+                submitFeedbackBtn.textContent = t('completion.feedbackSubmittingBtn');
+
+                const uploaded = await uploadFeedbackToApi(feedbackText);
+                if (uploaded) {
+                    feedbackInput.value = '';
+                    submitFeedbackBtn.textContent = t('completion.feedbackSentBtn');
+                } else {
+                    submitFeedbackBtn.textContent = t('completion.feedbackSubmitBtn');
+                    submitFeedbackBtn.disabled = false;
+                    showToast(t('completion.feedbackFailedToast'));
                 }
             });
         }
@@ -462,6 +491,7 @@ async function showLockScreen() {
 document.addEventListener('DOMContentLoaded', async () => {
     prefetchDummyImages();
     setupFooterContactToggle();
+    const forceCompletionPage = new URLSearchParams(window.location.search).get('test') === 'completion';
 
     // Set HTML lang attribute based on user's browser language
     document.documentElement.lang = getUserLanguage();
@@ -472,6 +502,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     storage.getGroupIdentifier();
     storage.getUserUuid();
     window.history.pushState({}, document.title, "/");
+
+    if (forceCompletionPage) {
+        runtimeState.taskList = [];
+        runtimeState.currentTaskIndex = 0;
+        await loadTask(0);
+        return;
+    }
 
     await showLandingPage();
 
