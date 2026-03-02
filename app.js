@@ -6,6 +6,7 @@ import { DUMMY_TASKS, taskControllers } from './modules/app/config/task-registry
 import { prefetchTaskBatchImages, prefetchDummyImages } from './modules/app/services/image-prefetch.js';
 import { fetchTasksFromApi as fetchTasksFromApiService, uploadResultsToApi as uploadResultsToApiService, uploadFeedbackToApi as uploadFeedbackToApiService } from './modules/app/services/task-api.js';
 import { runtimeState } from './modules/app/state/runtime-state.js';
+import { setupCompletionHandlers } from './modules/controllers/completion.js';
 
 // Mobile viewport height is now handled by CSS using 100dvh (dynamic viewport height)
 // No JavaScript calculation needed - modern browsers handle address bar showing/hiding automatically
@@ -212,85 +213,16 @@ async function loadTask(index) {
         // Apply translations to the newly added content
         applyTranslations(elements.taskContainer);
 
-        // Copy link button handler
-        const copyLinkBtn = document.getElementById('copy-link-btn');
-        if (copyLinkBtn) {
-            copyLinkBtn.addEventListener('click', async () => {
-                try {
-                    await navigator.clipboard.writeText(shareInput.value);
-                    const originalText = copyLinkBtn.textContent;
-                    copyLinkBtn.textContent = t('completion.copiedBtn');
-                    copyLinkBtn.style.backgroundColor = '#4caf50';
-                    setTimeout(() => {
-                        copyLinkBtn.textContent = originalText;
-                        copyLinkBtn.style.backgroundColor = '';
-                    }, 2000);
-                } catch (err) {
-                    // Fallback for older browsers
-                    if (shareInput) {
-                        shareInput.select();
-                        document.execCommand('copy');
-                    }
-                }
-            });
-        }
-
-        const moreTasksBtn = document.getElementById('more-tasks-btn');
-        if (moreTasksBtn) {
-            // // Show the "More tasks" button only if backend says we're not finished
-            // if (runtimeState.userProgress && !runtimeState.userProgress.finished) {
-            //     moreTasksBtn.style.setProperty('display', 'inline-block', 'important');
-            // }
-
-            moreTasksBtn.addEventListener('click', async () => {
-                if (storage.isCoolingDown()) {
-                    showToast(t('messages.noMoreTasks'));
-                    return;
-                }
-
-                moreTasksBtn.disabled = true;
-                const originalText = moreTasksBtn.textContent;
-                moreTasksBtn.textContent = t('messages.loadingTasks');
-
-                const nextTasks = await fetchTasksFromApi();
-                if (nextTasks && nextTasks.length > 0) {
-                    runtimeState.taskList = [...runtimeState.taskList, ...nextTasks];
-                    runtimeState.tasksLoaded = true;
-                    prefetchTaskBatchImages(nextTasks);
-                    loadTask(runtimeState.currentTaskIndex + 1);
-                } else {
-                    storage.setCooldown();
-                    showToast(t('messages.noMoreTasks'), 6000);
-                    moreTasksBtn.disabled = false;
-                    moreTasksBtn.textContent = originalText;
-                }
-            });
-        }
-
-        const feedbackInput = document.getElementById('feedback-input');
-        const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
-        if (feedbackInput && submitFeedbackBtn) {
-            submitFeedbackBtn.addEventListener('click', async () => {
-                const feedbackText = feedbackInput.value.trim();
-                if (!feedbackText) {
-                    showToast(t('completion.feedbackEmptyToast'));
-                    return;
-                }
-
-                submitFeedbackBtn.disabled = true;
-                submitFeedbackBtn.textContent = t('completion.feedbackSubmittingBtn');
-
-                const uploaded = await uploadFeedbackToApi(feedbackText);
-                if (uploaded) {
-                    feedbackInput.value = '';
-                    submitFeedbackBtn.textContent = t('completion.feedbackSentBtn');
-                } else {
-                    submitFeedbackBtn.textContent = t('completion.feedbackSubmitBtn');
-                    submitFeedbackBtn.disabled = false;
-                    showToast(t('completion.feedbackFailedToast'));
-                }
-            });
-        }
+        setupCompletionHandlers({
+            t,
+            showToast,
+            storage,
+            runtimeState,
+            fetchTasksFromApi,
+            prefetchTaskBatchImages,
+            loadTask,
+            uploadFeedbackToApi
+        });
 
         return;
     }
@@ -491,9 +423,9 @@ async function showLockScreen() {
 document.addEventListener('DOMContentLoaded', async () => {
     prefetchDummyImages();
     setupFooterContactToggle();
-    const forceCompletionPage = new URLSearchParams(window.location.search).get('test') === 'completion';
+    // const forceCompletionPage = new URLSearchParams(window.location.search).get('test') === 'completion';
 
-    // Set HTML lang attribute based on user's browser language
+    // Set HTML lang attribute
     document.documentElement.lang = getUserLanguage();
 
     // Apply translations to static elements (like storage view)
@@ -503,12 +435,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     storage.getUserUuid();
     window.history.pushState({}, document.title, "/");
 
-    if (forceCompletionPage) {
-        runtimeState.taskList = [];
-        runtimeState.currentTaskIndex = 0;
-        await loadTask(0);
-        return;
-    }
+    // if (forceCompletionPage) {
+    //     runtimeState.taskList = [];
+    //     runtimeState.currentTaskIndex = 0;
+    //     await loadTask(0);
+    //     return;
+    // }
 
     await showLandingPage();
 

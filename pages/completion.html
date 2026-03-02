@@ -5,21 +5,21 @@
     </div>
     <button class="primary" id="more-tasks-btn" data-i18n="completion.moreTasksBtn" style="display: none !important;">Give me more tasks!</button>
     
+    <div id="feedback-card" class="card completion-card">
+        <h3 data-i18n="completion.feedbackTitle">Optional feedback</h3>
+        <p class="completion-description" data-i18n="completion.feedbackDescription">Share anything we can improve.</p>
+        <textarea id="feedback-input" rows="5" maxlength="2000" data-i18n-placeholder="completion.feedbackPlaceholder"></textarea>
+        <div class="completion-feedback-actions">
+            <button class="primary" id="submit-feedback-btn" data-i18n="completion.feedbackSubmitBtn">Send feedback</button>
+        </div>
+    </div>
+
     <div class="card completion-card">
         <h3 data-i18n="completion.shareTitle">Help our Research</h3>
         <p class="completion-description" data-i18n="completion.shareDescription">Share this study with others to help us collect more data.</p>
         <div class="completion-share-row">
             <input type="text" id="share-link-input" value="" readonly>
             <button class="primary" id="copy-link-btn" data-i18n="completion.copyBtn">Copy Link</button>
-        </div>
-    </div>
-
-    <div class="card completion-card">
-        <h3 data-i18n="completion.feedbackTitle">Optional feedback</h3>
-        <p class="completion-description" data-i18n="completion.feedbackDescription">Share anything we can improve.</p>
-        <textarea id="feedback-input" rows="5" maxlength="2000" data-i18n-placeholder="completion.feedbackPlaceholder"></textarea>
-        <div class="completion-feedback-actions">
-            <button class="primary" id="submit-feedback-btn" data-i18n="completion.feedbackSubmitBtn">Send feedback</button>
         </div>
     </div>
 </div>
