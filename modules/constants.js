@@ -20,3 +20,5 @@ export const DRAWING_STYLE = {
     shadowColor: 'rgba(255, 71, 87, 0.8)',
     fillOpacity: 0.2
 };
+
+export const USE_BROWSER_LANG = false;

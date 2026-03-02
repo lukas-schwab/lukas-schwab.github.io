@@ -68,7 +68,6 @@ export async function uploadFeedbackToApi(storage, feedbackText) {
         userUuid: storage.getUserUuid(),
         groupIdentifier: storage.getGroupIdentifier(),
         feedback: trimmedFeedback,
-        timestamp: new Date().toISOString()
     };
 
     try {

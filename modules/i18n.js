@@ -2,6 +2,46 @@
  * Internationalization module for bilingual support (English/German)
  */
 
+import { USE_BROWSER_LANG } from "./constants.js";
+
+const classNameTranslations = {
+    en: {
+        tench: 'fish',
+        english_springer: 'dog',
+        cassette_player: 'cassette player',
+        chain_saw: 'chainsaw',
+        church: 'church',
+        french_horn: 'french horn',
+        garbage_truck: 'garbage truck',
+        gas_pump: 'gas pump',
+        golf_ball: 'golf ball',
+        parachute: 'parachute',
+        airliner: 'airliner',
+        canoe: 'canoe',
+    },
+    de: {
+        tench: 'Fisch',
+        english_springer: 'Hund',
+        cassette_player: 'Kassettenrekorder',
+        chain_saw: 'Kettensäge',
+        church: 'Kirche',
+        french_horn: 'Waldhorn',
+        garbage_truck: 'Müllwagen',
+        gas_pump: 'Zapfsäule',
+        golf_ball: 'Golfball',
+        parachute: 'Fallschirm',
+        airliner: 'Passagierflugzeug',
+        canoe: 'Kanu',
+    }
+};
+
+function normalizeClassNameKey(value) {
+    return decodeURIComponent(String(value || ''))
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-]+/g, '_');
+}
+
 const translations = {
     en: {
         // Landing Page
@@ -15,7 +55,7 @@ const translations = {
             card1Title: 'What to Expect',
             card1Text: 'Complete interactive tasks involving image analysis, region selection, labeling, and visual distinguishability.',
             card2Title: 'Time Commitment',
-            card2Text: 'Approximately 5-10 minutes to complete all tasks at your own pace.',
+            card2Text: 'Approximately 5 minutes to complete all tasks at your own pace.',
             card3Title: 'Privacy First',
             card3Text: 'All data is fully pseudonymized. Only task responses are collected—no personal information.',
             startBtn: 'Begin Study',
@@ -27,7 +67,7 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'You see details of images of category [class]. Label the common detail.',
+            title: 'You see parts of images belonging to the category "[class]". Label the common detail.',
             subtitle: 'Try to label the common detail and not the category itself.',
             infoTooltip: 'The content of the images can differ from the category name.',
             defaultClassName: "fish",
@@ -76,7 +116,7 @@ const translations = {
             copyBtn: 'Copy Link',
             copiedBtn: 'Copied!',
             feedbackTitle: 'Optional feedback',
-            feedbackDescription: 'If you want, share any feedback about the study experience.',
+            feedbackDescription: 'If you want, share any feedback about the study experience or context to your answers.',
             feedbackPlaceholder: 'Type your feedback here...',
             feedbackSubmitBtn: 'Send feedback',
             feedbackSubmittingBtn: 'Sending...',
@@ -120,7 +160,7 @@ const translations = {
             card1Title: 'Was dich erwartet',
             card1Text: 'Du absolvierst interaktive Aufgaben: Bilder analysieren, Bereiche auswählen, beschriften und vergleichen.',
             card2Title: 'Zeitaufwand',
-            card2Text: 'Etwa 5-10 Minuten – ganz in deinem eigenen Tempo.',
+            card2Text: 'Etwa 5 Minuten – ganz in deinem eigenen Tempo.',
             card3Title: 'Deine Privatsphäre',
             card3Text: 'Alle Daten sind vollständig pseudonymisiert. Wir sammeln nur deine Aufgabenlösungen – keine persönlichen Infos.',
             startBtn: 'Los geht\'s',
@@ -132,7 +172,7 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'Du kannst Details von Bildern der Kategorie [class] sehen. Beschrifte das gemeinsame Detail.',
+            title: 'Du kannst Teile von Bildern sehen, welche der Kategorie "[class]" angehören. Beschrifte das gemeinsame Detail.',
             subtitle: 'Versuche das gemeinsame Detail zu nennen und nicht die Kategorie selbst.',
             infoTooltip: 'Der Bildinhalt kann vom Namen der Kategorie abweichen.',
             defaultClassName: "Fisch",
@@ -226,10 +266,14 @@ export function getUserLanguage() {
     if (savedLang && ['en', 'de'].includes(savedLang)) {
         return savedLang;
     }
-
-    // Fall back to browser language
-    const browserLang = navigator.language.split('-')[0]; // 'de', 'en', etc.
-    return ['en', 'de'].includes(browserLang) ? browserLang : 'en';
+    
+    if (USE_BROWSER_LANG) {
+        // Fall back to browser language
+        const browserLang = navigator.language.split('-')[0]; // 'de', 'en', etc.
+        return ['en', 'de'].includes(browserLang) ? browserLang : 'en';
+    } else {
+        return 'en';
+    }
 }
 
 /**
@@ -257,6 +301,23 @@ export function t(key, lang = getUserLanguage()) {
         value = value?.[k];
     }
     return value || key;
+}
+
+export function localizeClassName(className, lang = getUserLanguage()) {
+    const rawClassName = decodeURIComponent(String(className || '')).trim();
+    if (!rawClassName) {
+        return t('labeling.defaultClassName', lang);
+    }
+
+    const normalizedKey = normalizeClassNameKey(rawClassName);
+    const languageMap = classNameTranslations[lang] || {};
+    const englishMap = classNameTranslations.en;
+
+    return languageMap[rawClassName]
+        || languageMap[normalizedKey]
+        || englishMap[rawClassName]
+        || englishMap[normalizedKey]
+        || rawClassName;
 }
 
 /**

@@ -4,7 +4,7 @@
  */
 import { storage } from '../storage.js';
 import { showToast, applyButtonCooldown } from '../utils.js';
-import { t } from '../i18n.js';
+import { t, localizeClassName } from '../i18n.js';
 
 /**
  * Extract class name from image URL path folder name only
@@ -37,7 +37,8 @@ export const LabelingController = {
         if (titleElement && data.img) {
             const classValue = extractClassFromImagePath(data.img);
             if (classValue) {
-                titleElement.textContent = t('labeling.title').replace('[class]', classValue);
+                const localizedClassName = localizeClassName(classValue);
+                titleElement.textContent = t('labeling.title').replace('[class]', localizedClassName);
             }
         }
 
