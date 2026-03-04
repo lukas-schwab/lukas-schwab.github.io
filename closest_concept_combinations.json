@@ -1,0 +1,241 @@
+{
+  "airliner": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_2",
+      "similarity": 0.459270715713501
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_3",
+      "similarity": 0.40921318531036377
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.3979545831680298
+    },
+    {
+      "left_concept": "concept_4",
+      "right_concept": "concept_5",
+      "similarity": 0.37913578748703003
+    }
+  ],
+  "canoe": [
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.49870944023132324
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.43728673458099365
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.3737450838088989
+    }
+  ],
+  "casette_recorder": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.5083411931991577
+    },
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_4",
+      "similarity": 0.4551239609718323
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_2",
+      "similarity": 0.44342976808547974
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.441134512424469
+    }
+  ],
+  "chainsaw": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.46197962760925293
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.4306039810180664
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.4049190282821655
+    }
+  ],
+  "church": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.4761212468147278
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.44156062602996826
+    },
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_5",
+      "similarity": 0.43112367391586304
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.4103492498397827
+    }
+  ],
+  "english_springer": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_2",
+      "similarity": 0.48676252365112305
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_3",
+      "similarity": 0.4023728370666504
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.3938997983932495
+    },
+    {
+      "left_concept": "concept_4",
+      "right_concept": "concept_5",
+      "similarity": 0.3807103633880615
+    }
+  ],
+  "french_horn": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.4945611357688904
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.49308478832244873
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.4671359062194824
+    }
+  ],
+  "garbage_truck": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.47617775201797485
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.46525800228118896
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.4520285129547119
+    }
+  ],
+  "gas_pump": [
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.4616105556488037
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.43975895643234253
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.4111975431442261
+    },
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_4",
+      "similarity": 0.39456695318222046
+    }
+  ],
+  "gold_ball": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.5136640071868896
+    },
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_4",
+      "similarity": 0.4731149673461914
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.42073702812194824
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.40637290477752686
+    }
+  ],
+  "parachute": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.49300968647003174
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.4870055913925171
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.4364495277404785
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.3761892318725586
+    }
+  ],
+  "tench": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.5485349297523499
+    },
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_5",
+      "similarity": 0.4376794695854187
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.43727564811706543
+    }
+  ]
+}
