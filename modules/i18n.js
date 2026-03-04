@@ -30,7 +30,7 @@ const classNameTranslations = {
         gas_pump: 'Zapfsäule',
         golf_ball: 'Golfball',
         parachute: 'Fallschirm',
-        airliner: 'Passagierflugzeug',
+        airliner: 'Flugzeug',
         canoe: 'Kanu',
     }
 };
@@ -67,8 +67,8 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'You see parts of images belonging to the category "[class]". Label the common detail.',
-            subtitle: 'Try to label the common detail and not the category itself.',
+            title: 'You see parts of images that belong to the category "[class]". Label the common detail.',
+            subtitle: 'Label the common detail and not the category itself.',
             infoTooltip: 'The content of the images can differ from the category name.',
             defaultClassName: "fish",
             placeholder: 'Enter label here...',
@@ -172,8 +172,9 @@ const translations = {
         },
         // Labeling Page
         labeling: {
-            title: 'Du kannst Teile von Bildern sehen, welche der Kategorie "[class]" angehören. Beschrifte das gemeinsame Detail.',
-            subtitle: 'Versuche das gemeinsame Detail zu nennen und nicht die Kategorie selbst.',
+
+            title: 'Du kannst Teile von Bildern sehen, welche der Kategorie "[class]" angehören. Bennene das gemeinsame Detail.',
+            subtitle: 'Bennene das gemeinsame Detail und nicht die Kategorie selbst.',
             infoTooltip: 'Der Bildinhalt kann vom Namen der Kategorie abweichen.',
             defaultClassName: "Fisch",
             placeholder: 'Dein Wort...',
