@@ -1,0 +1,236 @@
+{
+  "val_airlinerresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.5829750895500183
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.5756499171257019
+    },
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_5",
+      "similarity": 0.5104647278785706
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.4129600524902344
+    }
+  ],
+  "val_canoeresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.5563927888870239
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.4990648031234741
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.4592542052268982
+    }
+  ],
+  "val_casette_recorderresnetnmf": [
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_4",
+      "similarity": 0.5709981918334961
+    },
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_5",
+      "similarity": 0.5568890571594238
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.5518844127655029
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.5455009937286377
+    }
+  ],
+  "val_chainsawresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.5579613447189331
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.5280513763427734
+    },
+    {
+      "left_concept": "concept_4",
+      "right_concept": "concept_5",
+      "similarity": 0.4996722936630249
+    }
+  ],
+  "val_churchresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.5733619928359985
+    },
+    {
+      "left_concept": "concept_4",
+      "right_concept": "concept_5",
+      "similarity": 0.5034439563751221
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.4503278136253357
+    }
+  ],
+  "val_english_springerresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.5511289238929749
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.5197856426239014
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.5194085240364075
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.4585556983947754
+    }
+  ],
+  "val_french_hornresnetnmf": [
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_4",
+      "similarity": 0.5548906922340393
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_2",
+      "similarity": 0.5510969758033752
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.5419033765792847
+    }
+  ],
+  "val_garbage_truckresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.568304717540741
+    },
+    {
+      "left_concept": "concept_4",
+      "right_concept": "concept_5",
+      "similarity": 0.5443465113639832
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.5366576313972473
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.5298489332199097
+    }
+  ],
+  "val_gas_pumpresnetnmf": [
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_5",
+      "similarity": 0.5834839940071106
+    },
+    {
+      "left_concept": "concept_4",
+      "right_concept": "concept_5",
+      "similarity": 0.5669002532958984
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.5625757575035095
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.5509587526321411
+    }
+  ],
+  "val_golf_ballresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.5654157400131226
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_5",
+      "similarity": 0.5175817608833313
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.45749425888061523
+    }
+  ],
+  "val_parachuteresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_2",
+      "similarity": 0.4869729280471802
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_4",
+      "similarity": 0.4786916971206665
+    },
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_3",
+      "similarity": 0.47013795375823975
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_5",
+      "similarity": 0.4285237789154053
+    }
+  ],
+  "val_tenchresnetnmf": [
+    {
+      "left_concept": "concept_1",
+      "right_concept": "concept_4",
+      "similarity": 0.5562645792961121
+    },
+    {
+      "left_concept": "concept_3",
+      "right_concept": "concept_5",
+      "similarity": 0.48498809337615967
+    },
+    {
+      "left_concept": "concept_2",
+      "right_concept": "concept_3",
+      "similarity": 0.4674654006958008
+    }
+  ]
+}
