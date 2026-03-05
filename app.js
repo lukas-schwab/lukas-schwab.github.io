@@ -423,7 +423,7 @@ async function showLockScreen() {
 document.addEventListener('DOMContentLoaded', async () => {
     prefetchDummyImages();
     setupFooterContactToggle();
-    // const forceCompletionPage = new URLSearchParams(window.location.search).get('test') === 'completion';
+    const forceCompletionPage = new URLSearchParams(window.location.search).get('test') === 'completion';
 
     // Set HTML lang attribute
     document.documentElement.lang = getUserLanguage();
@@ -435,12 +435,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     storage.getUserUuid();
     window.history.pushState({}, document.title, "/");
 
-    // if (forceCompletionPage) {
-    //     runtimeState.taskList = [];
-    //     runtimeState.currentTaskIndex = 0;
-    //     await loadTask(0);
-    //     return;
-    // }
+    if (forceCompletionPage) {
+        runtimeState.taskList = [];
+        runtimeState.currentTaskIndex = 0;
+        await loadTask(0);
+        return;
+    }
 
     await showLandingPage();
 
