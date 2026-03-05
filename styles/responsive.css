@@ -200,4 +200,30 @@
     .footer-section {
         width: 100%;
     }
+
+    .completion-page {
+        padding: 1.25rem 0.75rem 2rem;
+        gap: 1rem;
+    }
+
+    .completion-card {
+        max-width: 100%;
+    }
+
+    .completion-share-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .completion-share-row button {
+        width: 100%;
+    }
+
+    .completion-feedback-actions {
+        justify-content: stretch;
+    }
+
+    .completion-feedback-actions button {
+        width: 100%;
+    }
 }
