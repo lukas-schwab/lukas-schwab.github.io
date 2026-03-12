@@ -59,6 +59,7 @@ const translations = {
             card3Title: 'Privacy First',
             card3Text: 'All data is fully pseudonymized. Only task responses are collected—no personal information.',
             startBtn: 'Begin Study',
+            privacyBtn: 'Privacy Policy',
             impressumBtn: 'Impressum',
             loadingText: 'Almost there...',
             footerContactTitle: 'Contact',
@@ -77,7 +78,7 @@ const translations = {
         },
         // Property Identifier Page
         propertyId: {
-            title: 'Click on each seperate thing and visual property you see.',
+            title: 'Click on each separate thing and visual property you see.',
             subtitle: 'You can set as many markers as you like.',
             undoBtn: 'Undo Last Marker',
             submitBtn: 'Submit'
@@ -164,6 +165,7 @@ const translations = {
             card3Title: 'Deine Privatsphäre',
             card3Text: 'Alle Daten sind vollständig pseudonymisiert. Wir sammeln nur deine Aufgabenlösungen – keine persönlichen Infos.',
             startBtn: 'Los geht\'s',
+            privacyBtn: 'Datenschutz',
             impressumBtn: 'Impressum',
             loadingText: 'Wird vorbereitet...',
             footerContactTitle: 'Kontakt',
