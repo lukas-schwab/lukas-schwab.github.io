@@ -450,6 +450,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // if (isUnlocked) {
     //     await showLandingPage();
     // } else {
-    //     await showLockScreen();
+    await showLockScreen();
     // }
 });
